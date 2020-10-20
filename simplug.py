@@ -244,6 +244,8 @@ class SimplugHook:
 class SimplugHookAsync(SimplugHook):
     """Wrapper of an async hook"""
 
+    # invalid-overridden-method
+    # pylint: disable=bad-option-value,W0236
     async def __call__(self, *args, **kwargs):
         """Call the hook in your system asynchronously
 
