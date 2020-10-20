@@ -23,7 +23,7 @@ setup(
     name='simplug',
     version='0.0.2',
     description='A simple entrypoint-free plugin system for python',
-    python_requires='==3.*,>=3.6.0',
+    python_requires='==3.*,>=3.7.0',
     project_urls={
         "homepage": "https://github.com/pwwang/simplug",
         "repository": "https://github.com/pwwang/simplug"

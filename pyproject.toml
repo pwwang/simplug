@@ -9,7 +9,7 @@ repository  = "https://github.com/pwwang/simplug"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 diot = "*"
 
 [tool.poetry.dev-dependencies]
