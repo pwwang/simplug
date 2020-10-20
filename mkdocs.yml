@@ -13,5 +13,6 @@ plugins:
 extra_css:
     - style.css
 nav:
+    - '': mkapi/api/simplug
     - 'Home': 'index.md'
-    - 'API': mkapi/api/simplug
+    - 'API': api/simplug.md

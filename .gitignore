@@ -150,4 +150,6 @@ workdir/
 # lightning_logs, plkit_logs
 *_logs/
 
+docs/api/
+
 # End of https://www.gitignore.io/api/python
