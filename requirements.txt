@@ -1,0 +1,3 @@
+diot
+pytest
+pytest-cov
