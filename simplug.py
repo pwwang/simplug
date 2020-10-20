@@ -7,6 +7,8 @@ from collections import namedtuple
 from enum import Enum
 from diot import OrderedDiot
 
+__version__ = '0.0.1'
+
 SimplugImpl = namedtuple('SimplugImpl', ['impl'])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
 
