@@ -1,6 +1,6 @@
 # simplug
 
-A simple entrypoint-free plugin system for python
+A simple entrypoint-free plugin system for python with async hooks supported
 
 ## Installation
 
@@ -9,10 +9,11 @@ pip install -U simplug
 ```
 
 ## Features
-- Entrypoint-free, meaning you can configure the plugins to be loaded in your host
+- Entrypoint-free, meaning no unwanted modules imported beforehand.
 - Loading priority definition while implementing a plugin
 - Required hooks (hooks required to be implemented in plugins)
 - Different ways to fetch results from hooks
+- Async hooks supported
 
 ## Examples
 
@@ -135,6 +136,24 @@ You can use following methods to inspect the plugin registry:
 ### Calling hooks
 
 Hooks are call by `simplug.hooks.<hook_name>(<arguments>)` and results are collected based on the `result` argument passed in `simplug.spec` when defining hooks.
+
+### Async hooks
+
+It makes no big difference to define an async hook:
+```python
+@simplug.spec
+async def async_hook(arg):
+    ...
+
+# to supress warnings for sync implementation
+@simplug.spec(warn_sync_impl_on_async=False)
+async def async_hook(arg):
+    ...
+```
+
+One can implement this hook in either an async or a sync way. However, when implementing it in a sync way, a warning will be raised. To suppress the warning, one can pass a `False` value of argument `warn_sync_impl_on_async` to `simplug.spec`.
+
+To call the async hooks (`simplug.hooks.async_hook(arg)`), you will just need to call it like any other async functions (using `asyncio.run`, for example)
 
 ## API
 

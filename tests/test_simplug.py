@@ -193,3 +193,47 @@ def test_simplug_module(capsys):
     System()
 
     assert 'Arg: arg\n' == capsys.readouterr().out
+
+def test_async_hook():
+    import asyncio
+    simplug = Simplug('async_hook')
+
+    class HookSpec:
+
+        @simplug.spec
+        async def ahook(self, arg):
+            pass
+
+        @simplug.spec
+        async def ahook2(self, arg):
+            pass
+
+    class Plugin1:
+
+        @simplug.impl
+        async def ahook(self, arg):
+            await asyncio.sleep(.01)
+            return arg
+
+    class Plugin2:
+
+        @simplug.impl
+        def ahook(self, arg):
+            return arg
+
+    class Plugin3(Plugin1):
+        ...
+
+    simplug.register(Plugin1, Plugin3)
+
+    with pytest.warns(SyncImplOnAsyncSpecWarning):
+        simplug.register(Plugin2)
+
+    simplug.disable('plugin3')
+
+    async def main():
+        await simplug.hooks.ahook2(1)
+        return await simplug.hooks.ahook(1)
+
+    assert asyncio.run(main()) == [1, 1]
+

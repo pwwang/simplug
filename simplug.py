@@ -2,12 +2,13 @@
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import inspect
+import warnings
 from importlib import import_module
 from collections import namedtuple
 from enum import Enum
 from diot import OrderedDiot
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 SimplugImpl = namedtuple('SimplugImpl', ['impl'])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
@@ -39,6 +40,9 @@ class HookRequired(SimplugException):
 
 class HookSpecExists(SimplugException):
     """When a hook has already been defined"""
+
+class SyncImplOnAsyncSpecWarning(Warning):
+    """When a sync implementation on an async hook"""
 
 class SimplugResult(Enum):
     """Way to get the results from the hooks
@@ -177,17 +181,34 @@ class SimplugHook:
         _has_self: Whether the parameters have `self` as the first. If so,
             it will be ignored while being called.
     """
-    def __init__(self,
+    def __init__(self, # pylint: disable=too-many-arguments
                  simplug_hooks: "SimplugHooks",
                  spec: Callable,
                  required: bool,
-                 result: SimplugResult):
+                 result: SimplugResult,
+                 warn_sync_impl_on_async: bool = False):
         self.simplug_hooks = simplug_hooks
         self.spec = spec
         self.name = spec.__name__
         self.required = required
         self.result = result
+        self.warn_sync_impl_on_async = warn_sync_impl_on_async
         self._has_self = list(inspect.signature(spec).parameters)[0] == 'self'
+
+    def _get_results(self, results: List[Any]) -> Any:
+        """Get the results according to self.result"""
+        if self.result == SimplugResult.ALL:
+            return results
+
+        results = [result for result in results if result is not None]
+        if self.result == SimplugResult.FIRST:
+            return results[0] if results else None
+
+        if self.result == SimplugResult.LAST:
+            return results[-1] if results else None
+        # ALL_BUT_NONE
+        return results
+
 
     def __call__(self, *args, **kwargs):
         """Call the hook in your system
@@ -209,26 +230,55 @@ class SimplugHook:
         """
         self.simplug_hooks._sort_registry()
         results = []
+        args = (None, *args) if self._has_self else args
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
                 continue
             hook = plugin.hook(self.name)
+
             if hook is not None:
-                results.append(hook.impl(None, *args, **kwargs)
-                               if self._has_self
-                               else hook.impl(*args, **kwargs))
+                results.append(hook.impl(*args, **kwargs))
 
-        if self.result == SimplugResult.ALL:
-            return results
+        return self._get_results(results)
 
-        results = [result for result in results if result is not None]
-        if self.result == SimplugResult.FIRST:
-            return results[0] if results else None
+class SimplugHookAsync(SimplugHook):
+    """Wrapper of an async hook"""
 
-        if self.result == SimplugResult.LAST:
-            return results[-1] if results else None
-        # ALL_BUT_NONE
-        return results
+    async def __call__(self, *args, **kwargs):
+        """Call the hook in your system asynchronously
+
+        Args:
+            *args: args for the hook
+            **kwargs: kwargs for the hook
+
+        Returns:
+            Depending on `self.result`:
+            - SimplugResult.ALL: Get all the results from the hook, as a list
+                including `NONE`s
+            - SimplugResult.ALL_BUT_NONE: Get all the results from the hook,
+                as a list, not including `NONE`s
+            - SimplugResult.FIRST: Get the none-`None` result from the
+                first plugin only (ordered by priority)
+            - SimplugResult.LAST: Get the none-`None` result from
+                the last plugin only
+        """
+        self.simplug_hooks._sort_registry()
+        results = []
+        args = (None, *args) if self._has_self else args
+        for plugin in self.simplug_hooks._registry.values():
+            if not plugin.enabled:
+                continue
+            hook = plugin.hook(self.name)
+            if hook is None:
+                continue
+
+            result = hook.impl(*args, **kwargs)
+            if inspect.iscoroutine(result):
+                results.append(await result)
+            else:
+                results.append(result)
+
+        return self._get_results(results)
 
 class SimplugHooks:
     """The hooks manager
@@ -271,13 +321,24 @@ class SimplugHooks:
                                    f'in plugin {plugin.name}')
             if hook is None:
                 continue
-            if (inspect.signature(hook.impl).parameters.keys() !=
-                    inspect.signature(spec.spec).parameters.keys()):
+
+            impl_params = list(inspect.signature(hook.impl).parameters.keys())
+            spec_params = list(inspect.signature(spec.spec).parameters.keys())
+
+            if impl_params != spec_params:
                 raise HookSignatureDifferentFromSpec(
                     f'{specname!r} in plugin {plugin.name}\n'
-                    f'Expect {inspect.signature(spec.spec).parameters.keys()}, '
-                    f'but got {inspect.signature(hook.impl).parameters.keys()}'
+                    f'Expect {spec_params}, '
+                    f'but got {impl_params}'
                 )
+
+            if (isinstance(spec, SimplugHookAsync) and
+                    spec.warn_sync_impl_on_async and
+                    not inspect.iscoroutinefunction(hook.impl)):
+                warnings.warn(f"Sync implementation on async hook "
+                              f"{specname!r} in plugin {plugin.name}",
+                              SyncImplOnAsyncSpecWarning)
+
         self._registry[plugin.name] = plugin
 
     def _sort_registry(self) -> None:
@@ -429,7 +490,8 @@ class Simplug:
     def spec(self,
              hook: Optional[Callable] = None,
              required: bool = False,
-             result: SimplugResult = SimplugResult.ALL_BUT_NONE) -> Callable:
+             result: SimplugResult = SimplugResult.ALL_BUT_NONE,
+             warn_sync_impl_on_async: bool = True) -> Callable:
         """A decorator to define the specification of a hook
 
         Args:
@@ -451,10 +513,17 @@ class Simplug:
             hook_name = hook_func.__name__
             if hook_name in self.hooks._specs:
                 raise HookSpecExists(hook_name)
-            self.hooks._specs[hook_name] = SimplugHook(self.hooks,
-                                                       hook_func,
-                                                       required,
-                                                       result)
+
+            if inspect.iscoroutinefunction(hook_func):
+                self.hooks._specs[hook_name] = SimplugHookAsync(
+                    self.hooks, hook_func, required, result,
+                    warn_sync_impl_on_async
+                )
+            else:
+                self.hooks._specs[hook_name] = SimplugHook(
+                    self.hooks, hook_func, required, result
+                )
+
             return hook_func
 
         return decorator(hook) if hook else decorator
