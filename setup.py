@@ -21,7 +21,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='simplug',
-    version='0.0.4',
+    version='0.0.5',
     description='A simple plugin system for python with async hooks supported',
     python_requires='==3.*,>=3.7.0',
     project_urls={

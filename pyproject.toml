@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simplug"
-version = "0.0.4"
+version = "0.0.5"
 description = "A simple plugin system for python with async hooks supported"
 authors = ["pwwang <pwwang@pwwang.com>"]
 license = "MIT"

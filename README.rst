@@ -161,6 +161,8 @@ You can use following methods to inspect the plugin registry:
 * ``simplug.get_plugin``\ : Get the plugin by name
 * ``simplug.get_all_plugins``\ : Get a dictionary of name-plugin mappings of all plugins
 * ``simplug.get_all_plugin_names``\ : Get the names of all plugins, in the order it will be executed.
+* ``simplug.get_enabled_plugins``\ : Get a dictionary of name-plugin mappings of all enabled plugins
+* ``simplug.get_enabled_plugin_names``\ : Get the names of all enabled plugins, in the order it will be executed.
 
 Calling hooks
 ^^^^^^^^^^^^^
