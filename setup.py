@@ -21,8 +21,8 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='simplug',
-    version='0.0.2',
-    description='A simple entrypoint-free plugin system for python',
+    version='0.0.3',
+    description='A simple plugin system for python with async hooks supported',
     python_requires='==3.*,>=3.7.0',
     project_urls={
         "homepage": "https://github.com/pwwang/simplug",
@@ -33,7 +33,11 @@ setup(
     license='MIT',
     packages=['examples', 'examples.complete'],
     package_dir={"": "."},
-    package_data={},
+    package_data={
+        "examples.complete": [
+            "plugin/simplug_complete_example_plugin.egg-info/*.txt"
+        ]
+    },
     install_requires=['diot'],
     extras_require={"dev": ["pytest", "pytest-cov"]},
 )

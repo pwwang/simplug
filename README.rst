@@ -2,7 +2,7 @@
 simplug
 =======
 
-A simple entrypoint-free plugin system for python with async hooks supported
+A simple plugin system for python with async hooks supported
 
 Installation
 ------------
@@ -10,16 +10,6 @@ Installation
 .. code-block::
 
    pip install -U simplug
-
-Features
---------
-
-
-* Entrypoint-free, meaning no unwanted modules imported beforehand.
-* Loading priority definition while implementing a plugin
-* Required hooks (hooks required to be implemented in plugins)
-* Different ways to fetch results from hooks
-* Async hooks supported
 
 Examples
 --------
@@ -73,7 +63,19 @@ A complete example
 
 See ``examples/complete/``.
 
-Running ``python -m examples/complete/`` gets us:
+Running ``python -m examples.complete`` gets us:
+
+.. code-block::
+
+   Your food. Enjoy some egg, egg, egg, salt, pepper, egg, egg
+   Some condiments? We have pickled walnuts, steak sauce, mushy peas, mint sauce
+
+After install the plugin:
+
+.. code-block:: shell
+
+   > pip install --editable examples.complete.plugin
+   > python -m examples.complete # run again
 
 .. code-block::
 
@@ -132,12 +134,19 @@ Note that default values in implementation functions will be ignored.
 
 Also note if a hook specification is under a namespace, it can take ``self`` as argument. However, this argument will be ignored while the hook is being called (\ ``self`` will be ``None``\ , and you still have to specify it in the function definition).
 
+Loading plugins from setuptools entrypoint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You have to call ``simplug.load_entrypoints(group)`` after the hook specifications are defined to load the plugins registered by setuptools entrypoint. If ``group`` is not given, the project name will be used.
+
 The plugin registry
 ^^^^^^^^^^^^^^^^^^^
 
 The plugins are registered by ``simplug.register(*plugins)``. Each plugin of ``plugins`` can be either a python object or a str denoting a module that can be imported by ``importlib.import_module``.
 
 The python object must have an attribute ``name``\ , ``__name__`` or ``__class.__name__`` for ``simplug`` to determine the name of the plugin. If the plugin name is determined from ``__name__`` or ``__class__.__name__``\ , it will be lowercased.
+
+If a plugin is loaded from setuptools entrypoint, then the entrypoint name will be used (no matter what name is defined inside the plugin)
 
 You can enable or disable a plugin temporarily after registration by:
 
