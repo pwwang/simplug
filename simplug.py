@@ -181,10 +181,12 @@ class SimplugWrapper:
             return None
         return ret
 
-    def __eq__(self, other: "SimplugWrapper") -> bool:
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
         return self.plugin is other.plugin
 
-    def __ne__(self, other: "SimplugWrapper") -> bool:
+    def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
 class SimplugHook:
@@ -401,6 +403,69 @@ class SimplugHooks:
                 exc.__traceback__
             ) from None
 
+class _SimplugContextOnly:
+    """The context manager with only given plugins enabled"""
+
+    def __init__(self, simplug, plugins):
+        self.simplug = simplug
+        self.orig_registry = simplug.hooks._registry.copy()
+        self.orig_status = {name: plugin.enabled
+                            for name, plugin in self.orig_registry.items()}
+
+        self.plugins = plugins
+
+    def __enter__(self):
+        orig_registry = self.orig_registry.copy()
+        # raw
+        orig_names = list(orig_registry.keys())
+        orig_raws = [plugin.plugin for plugin in orig_registry.values()]
+
+        for plugin in self.plugins:
+            if isinstance(plugin, str) and plugin in orig_registry:
+                orig_registry[plugin].enable()
+                del orig_registry[plugin]
+            elif plugin in orig_registry.values():
+                plugin.enable()
+                del orig_registry[plugin.name]
+            elif plugin in orig_raws:
+                name = orig_names[orig_raws.index(plugin)]
+                orig_registry[name].enable()
+                del orig_registry[name]
+            else:
+                self.simplug.register(plugin)
+
+        for plugin in orig_registry.values():
+            plugin.disable()
+
+    def __exit__(self, *exc):
+        self.simplug.hooks._registry = self.orig_registry
+        for name, status in self.orig_status.items():
+            self.simplug.hooks._registry[name].enabled = status
+
+class _SimplugContextBut(_SimplugContextOnly):
+
+    def __enter__(self):
+        orig_registry = self.orig_registry.copy()
+        # raw
+        orig_names = list(orig_registry.keys())
+        orig_raws = [plugin.plugin for plugin in orig_registry.values()]
+
+        for plugin in self.plugins:
+            if isinstance(plugin, str) and plugin in orig_registry:
+                orig_registry[plugin].disable()
+                del orig_registry[plugin]
+            elif plugin in orig_registry.values():
+                plugin.disable()
+                del orig_registry[plugin.name]
+            elif plugin in orig_raws:
+                name = orig_names[orig_raws.index(plugin)]
+                orig_registry[name].disable()
+                del orig_registry[name]
+            # ignore plugin not existing
+
+        for plugin in orig_registry.values():
+            plugin.enable()
+
 class Simplug:
     """The plugin manager for simplug
 
@@ -531,6 +596,31 @@ class Simplug:
         """
         return [name for name, plugin in self.hooks._registry.items()
                 if plugin.enabled]
+
+    def plugins_only_context(self, *plugins):
+        """A context manager with only given plugins enabled
+
+        Args:
+            *plugins: The plugin names or plugin objects
+                If the given plugin does not exist, register it.
+
+        Returns:
+            The context manager
+        """
+        return _SimplugContextOnly(self, plugins)
+
+    def plugins_but_context(self, *plugins):
+        """A context manager with all plugins but given plugins
+        enabled
+
+        Args:
+            *plugins: The plugin names or plugin objects to exclude
+                If the given plugin does not exist, ignore it
+
+        Returns:
+            The context manager
+        """
+        return _SimplugContextBut(self, plugins)
 
     def enable(self, *names: str) -> None:
         """Enable plugins by names

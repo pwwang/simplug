@@ -287,4 +287,51 @@ def test_entrypoint_plugin(tmp_path):
     simplug.load_entrypoints()
     assert simplug.hooks.hook(1) == [1, 2]
 
+def test_context():
 
+    simplug = Simplug('context_only')
+
+    class Specs:
+        @simplug.spec
+        def hook(arg):
+            ...
+
+    class Plugin:
+        def __init__(self, name):
+            self.name = name
+
+        @simplug.impl
+        def hook(arg):
+            return arg
+
+    with simplug.plugins_only_context(Plugin):
+        assert simplug.hooks.hook(1) == [1]
+
+    assert simplug.hooks.hook(1) == []
+
+    simplug.register(*(Plugin(f'plugin{i}') for i in range(5)))
+    assert simplug.hooks.hook(1) == [1] * 5
+
+    context = simplug.plugins_only_context('plugin0',
+                                           simplug.get_plugin('plugin1'),
+                                           simplug.get_plugin('plugin2', True),
+                                           Plugin('plugin5'))
+
+    context.__enter__()
+    assert simplug.hooks.hook(1) == [1] * 4
+    assert simplug.get_enabled_plugin_names() == ['plugin0', 'plugin1',
+                                                  'plugin2', 'plugin5']
+    context.__exit__()
+
+    assert simplug.hooks.hook(1) == [1] * 5
+    assert simplug.get_enabled_plugin_names() == [f'plugin{i}' for i in range(5)]
+
+    with simplug.plugins_but_context('plugin0',
+                                     simplug.get_plugin('plugin1'),
+                                     simplug.get_plugin('plugin4', True),
+                                     'plugin5'):
+        assert simplug.get_enabled_plugin_names() == ['plugin2', 'plugin3']
+        assert simplug.hooks.hook(1) == [1] * 2
+
+    assert simplug.hooks.hook(1) == [1] * 5
+    assert simplug.get_enabled_plugin_names() == [f'plugin{i}' for i in range(5)]
