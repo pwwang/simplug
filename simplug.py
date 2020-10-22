@@ -8,6 +8,12 @@ from collections import namedtuple
 from enum import Enum
 from diot import OrderedDiot
 
+try: # pragma: no cover
+    import importlib_metadata
+except ImportError: # pragma: no cover
+    # pylint: disable=ungrouped-imports
+    from importlib import metadata as importlib_metadata
+
 __version__ = '0.0.2'
 
 SimplugImpl = namedtuple('SimplugImpl', ['impl'])
@@ -25,6 +31,9 @@ class SimplugException(Exception):
 
 class NoSuchPlugin(SimplugException):
     """When a plugin cannot be imported"""
+
+class PluginRegistered(SimplugException):
+    """When   a plugin with a name already registered"""
 
 class NoPluginNameDefined(SimplugException):
     """When the name of the plugin cannot be found"""
@@ -89,15 +98,22 @@ class SimplugWrapper:
     """
 
     def __init__(self, plugin: Any, batch_index: int, index: int):
+        self.plugin = self._name = None
         if isinstance(plugin, str):
             try:
-                plugin = import_module(plugin)
+                self.plugin = import_module(plugin)
             except ImportError as exc:
                 raise NoSuchPlugin(plugin).with_traceback(
                     exc.__traceback__
                 ) from None
 
-        self.plugin = plugin # type: object
+        elif isinstance(plugin, tuple):
+            # plugin load from entrypoint
+            # name specified as second element explicitly
+            self.plugin, self._name = plugin
+
+        else:
+            self.plugin = plugin
 
         priority = getattr(self.plugin, 'priority', None)
         self.priority = ((batch_index, index)
@@ -122,6 +138,9 @@ class SimplugWrapper:
         Returns:
             The name of the plugin
         """
+        if self._name is not None:
+            return self._name
+
         try:
             return self.plugin.name
         except AttributeError:
@@ -162,6 +181,12 @@ class SimplugWrapper:
         if not isinstance(ret, SimplugImpl):
             return None
         return ret
+
+    def __eq__(self, other: "SimplugWrapper") -> bool:
+        return self.plugin is other.plugin
+
+    def __ne__(self, other: "SimplugWrapper") -> bool:
+        return not self.__eq__(other)
 
 class SimplugHook:
     """A hook of a plugin
@@ -314,6 +339,10 @@ class SimplugHooks:
             HookSignatureDifferentFromSpec: When the arguments of a hook
                 implementation is different from its specification
         """
+        if (plugin.name in self._registry and
+                plugin != self._registry[plugin.name]):
+            raise PluginRegistered(f'Another plugin named {plugin.name} '
+                                   'has already been registered.')
         # check if required hooks implemented
         # and signature
         for specname, spec in self._specs.items():
@@ -377,7 +406,6 @@ class Simplug:
     """The plugin manager for simplug
 
     Attributes:
-        PROJECT_INDEX: The project index to name the project by default
         PROJECTS: The projects registry, to make sure the same `Simplug`
             object by the name project name.
 
@@ -388,28 +416,33 @@ class Simplug:
             avoid `__init__` to be called more than once
     """
 
-    PROJECT_INDEX: int = 0
     PROJECTS: Dict[str, "Simplug"] = {}
 
-    def __new__(cls, project: Optional[str] = None) -> "Simplug":
-        proj_name = project
-        if proj_name is None:
-            proj_name = f"project-{cls.PROJECT_INDEX}"
-            cls.PROJECT_INDEX += 1
+    def __new__(cls, project: str) -> "Simplug":
+        if project not in cls.PROJECTS:
+            obj = super().__new__(cls)
+            obj.__init__(project)
+            cls.PROJECTS[project] = obj
 
-        if proj_name not in cls.PROJECTS:
-            cls.PROJECTS[proj_name] = super().__new__(cls)
+        return cls.PROJECTS[project]
 
-        return cls.PROJECTS[proj_name]
-
-    def __init__(self,
-                 # pylint: disable=unused-argument
-                 project: Optional[str] = None):
+    def __init__(self, project: str):
         if getattr(self, '_inited', None):
             return
         self._batch_index = 0
         self.hooks = SimplugHooks()
+        self.project = project
         self._inited = True
+
+    def load_entrypoints(self, group: Optional[str] = None):
+        """Load plugins from setuptools entry_points"""
+        group = group or self.project
+        for dist in importlib_metadata.distributions():
+            for epoint in dist.entry_points:
+                if epoint.group != group:
+                    continue
+                plugin = epoint.load()
+                self.register((plugin, epoint.name))
 
     def register(self, *plugins: Any) -> None:
         """Register plugins

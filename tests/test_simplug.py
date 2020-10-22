@@ -1,9 +1,11 @@
+import os, sys
+from pathlib import Path
 import pytest
 from simplug import *
 
 def test_simplug(capsys):
 
-    simplug = Simplug()
+    simplug = Simplug('project')
 
     class PluginSpec:
 
@@ -130,6 +132,8 @@ def test_simplug(capsys):
         @simplug.impl
         def no_such_hook(): pass
 
+
+
     with pytest.raises(NoSuchPlugin):
         simplug.register('nosuch')
     with pytest.raises(HookRequired):
@@ -140,6 +144,9 @@ def test_simplug(capsys):
     plug1 = Plugin1('plugin-1')
     plug2 = Plugin2()
     simplug.register(plug1, Plugin1, plug2, Plugin3, Plugin4)
+    with pytest.raises(PluginRegistered):
+        simplug.register(Plugin3())
+
     s = System()
     s.first() == 40
     s.last() == 300
@@ -236,4 +243,37 @@ def test_async_hook():
         return await simplug.hooks.ahook(1)
 
     assert asyncio.run(main()) == [1, 1]
+
+def test_entrypoint_plugin(tmp_path):
+
+    simplug = Simplug('simplug_entrypoint_test')
+
+    class Hooks:
+
+        @simplug.spec
+        def hook(arg):
+            ...
+
+    class Impl:
+
+        @simplug.impl
+        def hook(arg):
+            return arg
+
+    simplug.register(Impl)
+    assert simplug.get_all_plugin_names() == ['impl']
+    assert simplug.hooks.hook(1) == [1]
+
+    plugin_dir = Path(__file__).parent / 'entrypoint_plugin'
+    install_dir = tmp_path / 'simplug_test_lib'
+    install_dir.mkdir(parents=True, exist_ok=True)
+    sys.path.insert(0, str(plugin_dir))
+
+    os.system(
+        f'{sys.executable} {plugin_dir}/setup.py '
+        f'install --install-lib {install_dir} 1>/dev/null 2>/dev/null'
+    )
+    simplug.load_entrypoints()
+    assert simplug.hooks.hook(1) == [1, 2]
+
 

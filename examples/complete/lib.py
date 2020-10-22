@@ -1,6 +1,6 @@
 from simplug import Simplug
 
-simplug = Simplug('complete-example')
+simplug = Simplug('complete_example')
 priority = -99 # make sure this plugin executes first
 
 @simplug.impl

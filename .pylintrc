@@ -150,7 +150,9 @@ disable=print-statement,
         unbalanced-tuple-unpacking,
         no-self-use,
         too-few-public-methods,
-        protected-access
+        protected-access,
+        too-many-instance-attributes,
+        too-many-arguments
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

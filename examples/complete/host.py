@@ -5,8 +5,9 @@ from simplug import Simplug
 from . import hookspecs
 from . import lib
 
-simplug = Simplug('complete-example')
+simplug = Simplug('complete_example')
 simplug.register(lib)
+simplug.load_entrypoints()
 
 condiments_tray = {"pickled walnuts": 13, "steak sauce": 4, "mushy peas": 2}
 
@@ -36,7 +37,6 @@ class EggsellentCook:
             print("\n".join(condiment_comments))
 
 def main():
-    simplug.register(__name__.replace('.host', '.plugin'))
     cook = EggsellentCook(simplug.hooks)
     cook.add_ingredients()
     cook.serve_the_food()

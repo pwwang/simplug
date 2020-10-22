@@ -1,6 +1,6 @@
 from simplug import Simplug
 
-simplug = Simplug('complete-example')
+simplug = Simplug('complete_example')
 
 @simplug.impl
 def add_ingredients(ingredients):
