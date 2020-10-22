@@ -497,6 +497,24 @@ class Simplug:
                             for name, plugin
                             in self.hooks._registry.items()])
 
+    def get_enabled_plugins(self,
+                            raw: bool = False) -> Dict[str, SimplugWrapper]:
+        """Get a mapping of all enabled plugins
+
+        Args:
+            raw: Whether return the raw plugin or not
+                (the one when it's registered)
+                If a plugin is registered as a module by its name, the module
+                is returned.
+
+        Returns:
+            The mapping of all enabled plugins
+        """
+        return OrderedDiot([(name, plugin.plugin if raw else plugin)
+                            for name, plugin
+                            in self.hooks._registry.items()
+                            if plugin.enabled])
+
     def get_all_plugin_names(self) -> List[str]:
         """Get the names of all plugins
 
@@ -504,6 +522,15 @@ class Simplug:
             The names of all plugins
         """
         return list(self.hooks._registry.keys())
+
+    def get_enabled_plugin_names(self) -> List[str]:
+        """Get the names of all enabled plugins
+
+        Returns:
+            The names of all enabled plugins
+        """
+        return [name for name, plugin in self.hooks._registry.items()
+                if plugin.enabled]
 
     def enable(self, *names: str) -> None:
         """Enable plugins by names

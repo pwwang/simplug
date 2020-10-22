@@ -175,6 +175,7 @@ def test_simplug(capsys):
     assert isinstance(all_plugins, OrderedDiot)
     assert list(all_plugins.keys()) == ['plugin4', 'plugin-1', 'plugin1',
                                         'plugin2', 'plugin3']
+    simplug.disable('plugin-1')
     assert simplug.get_all_plugins(raw=True) == {
         'plugin-1': plug1,
         'plugin1': Plugin1,
@@ -182,6 +183,16 @@ def test_simplug(capsys):
         'plugin3': Plugin3,
         'plugin4': Plugin4
     }
+    assert simplug.get_enabled_plugins(raw=True) == {
+        'plugin1': Plugin1,
+        'plugin2': plug2,
+        'plugin3': Plugin3,
+        'plugin4': Plugin4
+    }
+    assert simplug.get_enabled_plugin_names() == [
+        'plugin4', 'plugin1',
+        'plugin2', 'plugin3'
+    ]
 
 def test_simplug_module(capsys):
     simplug = Simplug('simplug_module')
