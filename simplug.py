@@ -25,7 +25,6 @@ Args:
     impl: The hook implementation
 """
 
-
 class SimplugException(Exception):
     """Base exception class for simplug"""
 
@@ -506,21 +505,23 @@ class Simplug:
         """
         return list(self.hooks._registry.keys())
 
-    def enable(self, name: str) -> None:
-        """Enable a plugin by name
+    def enable(self, *names: str) -> None:
+        """Enable plugins by names
 
         Args:
-            name: The name of the plugin
+            *names: The names of the plugin
         """
-        self.get_plugin(name).enable()
+        for name in names:
+            self.get_plugin(name).enable()
 
-    def disable(self, name: str):
-        """Disable a plugin by name
+    def disable(self, *names: str) -> None:
+        """Disable plugins by names
 
         Args:
-            name: The name of the plugin
+            names: The names of the plugin
         """
-        self.get_plugin(name).disable()
+        for name in names:
+            self.get_plugin(name).disable()
 
     def spec(self,
              hook: Optional[Callable] = None,
