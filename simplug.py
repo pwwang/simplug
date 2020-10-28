@@ -122,6 +122,21 @@ class SimplugWrapper:
         self.enabled = True # type: bool
 
     @property
+    def version(self) -> Optional[str]:
+        """Try to get the version of the plugin.
+
+        If the attribute `version` is definied, use it. Otherwise, try to check
+        if `__version__` is defined. If neither is defined, return None.
+
+        Returns:
+            In the priority order of plugin.version, plugin.__version__ and None
+        """
+        return getattr(self.plugin,
+                       'version',
+                       getattr(self.plugin, '__version__', None))
+    __version__ = version
+
+    @property
     def name(self) -> str:
         """Try to get the name of the plugin.
 
