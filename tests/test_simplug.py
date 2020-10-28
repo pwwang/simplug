@@ -54,6 +54,7 @@ def test_simplug(capsys):
             return simplug.hooks._no_such_hook()
 
     class Plugin1:
+        __version__ = '0.0.1'
 
         def __init__(self, name):
             self.__name__ = name
@@ -144,6 +145,10 @@ def test_simplug(capsys):
     plug1 = Plugin1('plugin-1')
     plug2 = Plugin2()
     simplug.register(plug1, Plugin1, plug2, Plugin3, Plugin4)
+
+    plg1 = simplug.get_plugin('plugin-1')
+    assert plg1.version == '0.0.1'
+
     with pytest.raises(PluginRegistered):
         simplug.register(Plugin3())
 
@@ -228,16 +233,19 @@ def test_async_hook():
 
     class Plugin1:
 
+        incr = 1
+
         @simplug.impl
         async def ahook(self, arg):
             await asyncio.sleep(.01)
-            return arg
+            return self.incr + arg
 
     class Plugin2:
+        incr = 2
 
         @simplug.impl
         def ahook(self, arg):
-            return arg
+            return self.incr + arg
 
     class Plugin3(Plugin1):
         ...
@@ -253,7 +261,7 @@ def test_async_hook():
         await simplug.hooks.ahook2(1)
         return await simplug.hooks.ahook(1)
 
-    assert asyncio.run(main()) == [1, 1]
+    assert asyncio.run(main()) == [2, 3]
 
 def test_entrypoint_plugin(tmp_path):
 

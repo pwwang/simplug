@@ -271,14 +271,14 @@ class SimplugHook:
         """
         self.simplug_hooks._sort_registry()
         results = []
-        args = (None, *args) if self._has_self else args
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
                 continue
             hook = plugin.hook(self.name)
 
             if hook is not None:
-                results.append(hook.impl(*args, **kwargs))
+                plugin_args = (plugin.plugin, *args) if self._has_self else args
+                results.append(hook.impl(*plugin_args, **kwargs))
 
         return self._get_results(results)
 
@@ -307,7 +307,6 @@ class SimplugHookAsync(SimplugHook):
         """
         self.simplug_hooks._sort_registry()
         results = []
-        args = (None, *args) if self._has_self else args
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
                 continue
@@ -315,7 +314,8 @@ class SimplugHookAsync(SimplugHook):
             if hook is None:
                 continue
 
-            result = hook.impl(*args, **kwargs)
+            plugin_args = (plugin.plugin, *args) if self._has_self else args
+            result = hook.impl(*plugin_args, **kwargs)
             if inspect.iscoroutine(result):
                 results.append(await result)
             else:
