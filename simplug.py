@@ -1,5 +1,5 @@
 """A simple entrypoint-free plugin system for python"""
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 import inspect
 import warnings
@@ -16,7 +16,7 @@ except ImportError: # pragma: no cover
 
 __version__ = '0.0.5'
 
-SimplugImpl = namedtuple('SimplugImpl', ['impl'])
+SimplugImpl = namedtuple('SimplugImpl', ['impl', 'has_self'])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
 
 This is used to mark the method/function to be an implementation of a hook.
@@ -234,7 +234,6 @@ class SimplugHook:
         self.required = required
         self.result = result
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
-        self._has_self = list(inspect.signature(spec).parameters)[0] == 'self'
 
     def _get_results(self, results: List[Any]) -> Any:
         """Get the results according to self.result"""
@@ -277,7 +276,7 @@ class SimplugHook:
             hook = plugin.hook(self.name)
 
             if hook is not None:
-                plugin_args = (plugin.plugin, *args) if self._has_self else args
+                plugin_args = (plugin.plugin, *args) if hook.has_self else args
                 results.append(hook.impl(*plugin_args, **kwargs))
 
         return self._get_results(results)
@@ -314,7 +313,7 @@ class SimplugHookAsync(SimplugHook):
             if hook is None:
                 continue
 
-            plugin_args = (plugin.plugin, *args) if self._has_self else args
+            plugin_args = (plugin.plugin, *args) if hook.has_self else args
             result = hook.impl(*plugin_args, **kwargs)
             if inspect.iscoroutine(result):
                 results.append(await result)
@@ -372,6 +371,11 @@ class SimplugHooks:
             impl_params = list(inspect.signature(hook.impl).parameters.keys())
             spec_params = list(inspect.signature(spec.spec).parameters.keys())
 
+            if impl_params[0] == 'self':
+                impl_params = impl_params[1:]
+            if spec_params[0] == 'self':
+                spec_params = spec_params[1:]
+
             if impl_params != spec_params:
                 raise HookSignatureDifferentFromSpec(
                     f'{specname!r} in plugin {plugin.name}\n'
@@ -418,18 +422,21 @@ class SimplugHooks:
                 exc.__traceback__
             ) from None
 
-class _SimplugContextOnly:
-    """The context manager with only given plugins enabled"""
+class SimplugContext:
+    """The context manager for enabling or disabling a set of plugins"""
 
-    def __init__(self, simplug, plugins):
-        self.simplug = simplug
-        self.orig_registry = simplug.hooks._registry.copy()
-        self.orig_status = {name: plugin.enabled
-                            for name, plugin in self.orig_registry.items()}
-
+    def __init__(self, simplug: "Simplug", plugins: Optional[Iterable[Any]]):
         self.plugins = plugins
+        if plugins is not None:
+            self.simplug = simplug
+            self.orig_registry = simplug.hooks._registry.copy()
+            self.orig_status = {name: plugin.enabled
+                                for name, plugin in self.orig_registry.items()}
+
 
     def __enter__(self):
+        if self.plugins is None:
+            return
         orig_registry = self.orig_registry.copy()
         # raw
         orig_names = list(orig_registry.keys())
@@ -453,13 +460,21 @@ class _SimplugContextOnly:
             plugin.disable()
 
     def __exit__(self, *exc):
+        if self.plugins is None:
+            return
         self.simplug.hooks._registry = self.orig_registry
         for name, status in self.orig_status.items():
             self.simplug.hooks._registry[name].enabled = status
 
-class _SimplugContextBut(_SimplugContextOnly):
+class _SimplugContextOnly(SimplugContext):
+    """The context manager with only given plugins enabled"""
 
+class _SimplugContextBut(SimplugContext):
+    """The context manager with only given plugins disabled"""
     def __enter__(self):
+        if self.plugins is None:
+            return
+
         orig_registry = self.orig_registry.copy()
         # raw
         orig_names = list(orig_registry.keys())
@@ -612,19 +627,26 @@ class Simplug:
         return [name for name, plugin in self.hooks._registry.items()
                 if plugin.enabled]
 
-    def plugins_only_context(self, *plugins):
+    def plugins_only_context(
+            self,
+            plugins: Optional[Iterable[Any]]
+    ) -> _SimplugContextOnly:
         """A context manager with only given plugins enabled
 
         Args:
-            *plugins: The plugin names or plugin objects
+            plugins: The plugin names or plugin objects
                 If the given plugin does not exist, register it.
+                None to not enable or disable anything
 
         Returns:
             The context manager
         """
         return _SimplugContextOnly(self, plugins)
 
-    def plugins_but_context(self, *plugins):
+    def plugins_but_context(
+            self,
+            plugins: Optional[Iterable[Any]]
+    ) -> _SimplugContextBut:
         """A context manager with all plugins but given plugins
         enabled
 
@@ -710,4 +732,4 @@ class Simplug:
         """
         if hook.__name__ not in self.hooks._specs:
             raise NoSuchHookSpec(hook.__name__)
-        return SimplugImpl(hook)
+        return SimplugImpl(hook, 'self' in inspect.signature(hook).parameters)

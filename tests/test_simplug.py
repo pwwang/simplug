@@ -312,7 +312,7 @@ def test_context():
         def hook(arg):
             return arg
 
-    with simplug.plugins_only_context(Plugin):
+    with simplug.plugins_only_context([Plugin]):
         assert simplug.hooks.hook(1) == [1]
 
     assert simplug.hooks.hook(1) == []
@@ -320,10 +320,10 @@ def test_context():
     simplug.register(*(Plugin(f'plugin{i}') for i in range(5)))
     assert simplug.hooks.hook(1) == [1] * 5
 
-    context = simplug.plugins_only_context('plugin0',
-                                           simplug.get_plugin('plugin1'),
-                                           simplug.get_plugin('plugin2', True),
-                                           Plugin('plugin5'))
+    context = simplug.plugins_only_context(['plugin0',
+                                            simplug.get_plugin('plugin1'),
+                                            simplug.get_plugin('plugin2', True),
+                                            Plugin('plugin5')])
 
     context.__enter__()
     assert simplug.hooks.hook(1) == [1] * 4
@@ -334,12 +334,18 @@ def test_context():
     assert simplug.hooks.hook(1) == [1] * 5
     assert simplug.get_enabled_plugin_names() == [f'plugin{i}' for i in range(5)]
 
-    with simplug.plugins_but_context('plugin0',
-                                     simplug.get_plugin('plugin1'),
-                                     simplug.get_plugin('plugin4', True),
-                                     'plugin5'):
+    with simplug.plugins_but_context(['plugin0',
+                                      simplug.get_plugin('plugin1'),
+                                      simplug.get_plugin('plugin4', True),
+                                      'plugin5']):
         assert simplug.get_enabled_plugin_names() == ['plugin2', 'plugin3']
         assert simplug.hooks.hook(1) == [1] * 2
 
     assert simplug.hooks.hook(1) == [1] * 5
     assert simplug.get_enabled_plugin_names() == [f'plugin{i}' for i in range(5)]
+
+    with simplug.plugins_only_context(None):
+        assert simplug.hooks.hook(1) == [1] * 5
+
+    with simplug.plugins_but_context(None):
+        assert simplug.hooks.hook(1) == [1] * 5
