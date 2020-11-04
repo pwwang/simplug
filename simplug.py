@@ -14,7 +14,7 @@ except ImportError: # pragma: no cover
     # pylint: disable=ungrouped-imports
     from importlib import metadata as importlib_metadata
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 SimplugImpl = namedtuple('SimplugImpl', ['impl', 'has_self'])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
