@@ -1,20 +1,15 @@
 """A simple entrypoint-free plugin system for python"""
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
-
 import inspect
 import warnings
-from importlib import import_module
 from collections import namedtuple
 from enum import Enum
+from importlib import import_module
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+
+import importlib_metadata
 from diot import OrderedDiot
 
-try:  # pragma: no cover
-    import importlib_metadata
-except ImportError:  # pragma: no cover
-    # pylint: disable=ungrouped-imports
-    from importlib import metadata as importlib_metadata
-
-__version__ = "0.0.6"
+__version__ = "0.1.0"
 
 SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
@@ -241,7 +236,7 @@ class SimplugHook:
     """
 
     def __init__(
-        self,  # pylint: disable=too-many-arguments
+        self,
         simplug_hooks: "SimplugHooks",
         spec: Callable,
         required: bool,
@@ -304,8 +299,6 @@ class SimplugHook:
 class SimplugHookAsync(SimplugHook):
     """Wrapper of an async hook"""
 
-    # invalid-overridden-method
-    # pylint: disable=bad-option-value,W0236
     async def __call__(self, *args, **kwargs):
         """Call the hook in your system asynchronously
 
