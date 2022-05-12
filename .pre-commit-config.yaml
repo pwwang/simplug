@@ -19,6 +19,13 @@ repos:
         entry: flake8
         types: [python]
         language: system
+    -   id: mypy
+        name: Run mypy
+        files: ^simplug\.py$
+        pass_filenames: true
+        entry: mypy
+        types: [python]
+        language: system
     -   id: versionchecker
         name: Check version agreement in pyproject and __version__
         entry: bash -c
