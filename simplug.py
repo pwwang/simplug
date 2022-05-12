@@ -8,15 +8,15 @@ from collections import namedtuple
 from enum import Enum
 from diot import OrderedDiot
 
-try: # pragma: no cover
+try:  # pragma: no cover
     import importlib_metadata
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     # pylint: disable=ungrouped-imports
     from importlib import metadata as importlib_metadata
 
-__version__ = '0.0.6'
+__version__ = "0.0.6"
 
-SimplugImpl = namedtuple('SimplugImpl', ['impl', 'has_self'])
+SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
 
 This is used to mark the method/function to be an implementation of a hook.
@@ -25,32 +25,42 @@ Args:
     impl: The hook implementation
 """
 
+
 class SimplugException(Exception):
     """Base exception class for simplug"""
+
 
 class NoSuchPlugin(SimplugException):
     """When a plugin cannot be imported"""
 
+
 class PluginRegistered(SimplugException):
     """When   a plugin with a name already registered"""
+
 
 class NoPluginNameDefined(SimplugException):
     """When the name of the plugin cannot be found"""
 
+
 class HookSignatureDifferentFromSpec(SimplugException):
     """When the hook signature is different from spec"""
+
 
 class NoSuchHookSpec(SimplugException):
     """When implemented a undefined hook or calling a non-exist hook"""
 
+
 class HookRequired(SimplugException):
     """When a required hook is not implemented"""
+
 
 class HookSpecExists(SimplugException):
     """When a hook has already been defined"""
 
+
 class SyncImplOnAsyncSpecWarning(Warning):
     """When a sync implementation on an async hook"""
+
 
 class SimplugResult(Enum):
     """Way to get the results from the hooks
@@ -64,10 +74,12 @@ class SimplugResult(Enum):
             (ordered by priority)
         LAST: Get the none-`None` result from the last plugin only
     """
-    ALL = 'all'
-    ALL_BUT_NONE = 'all_but_none'
-    FIRST = 'first'
-    LAST = 'last'
+
+    ALL = "all"
+    ALL_BUT_NONE = "all_but_none"
+    FIRST = "first"
+    LAST = "last"
+
 
 class SimplugWrapper:
     """A wrapper for plugin
@@ -114,12 +126,14 @@ class SimplugWrapper:
         else:
             self.plugin = plugin
 
-        priority = getattr(self.plugin, 'priority', None)
-        self.priority = ((batch_index, index)
-                         if priority is None
-                         else (priority, batch_index)) # type: Tuple[int, int]
+        priority = getattr(self.plugin, "priority", None)
+        self.priority = (
+            (batch_index, index)
+            if priority is None
+            else (priority, batch_index)
+        )  # type: Tuple[int, int]
 
-        self.enabled = True # type: bool
+        self.enabled = True  # type: bool
 
     @property
     def version(self) -> Optional[str]:
@@ -129,11 +143,13 @@ class SimplugWrapper:
         if `__version__` is defined. If neither is defined, return None.
 
         Returns:
-            In the priority order of plugin.version, plugin.__version__ and None
+            In the priority order of plugin.version, plugin.__version__
+            and None
         """
-        return getattr(self.plugin,
-                       'version',
-                       getattr(self.plugin, '__version__', None))
+        return getattr(
+            self.plugin, "version", getattr(self.plugin, "__version__", None)
+        )
+
     __version__ = version
 
     @property
@@ -167,10 +183,10 @@ class SimplugWrapper:
 
         try:
             return self.plugin.__class__.__name__.lower()
-        except AttributeError: # pragma: no cover
+        except AttributeError:  # pragma: no cover
             pass
 
-        raise NoPluginNameDefined(str(self.plugin)) # pragma: no cover
+        raise NoPluginNameDefined(str(self.plugin))  # pragma: no cover
 
     def enable(self) -> None:
         """Enable this plugin"""
@@ -204,6 +220,7 @@ class SimplugWrapper:
     def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
+
 class SimplugHook:
     """A hook of a plugin
 
@@ -222,12 +239,15 @@ class SimplugHook:
         _has_self: Whether the parameters have `self` as the first. If so,
             it will be ignored while being called.
     """
-    def __init__(self, # pylint: disable=too-many-arguments
-                 simplug_hooks: "SimplugHooks",
-                 spec: Callable,
-                 required: bool,
-                 result: SimplugResult,
-                 warn_sync_impl_on_async: bool = False):
+
+    def __init__(
+        self,  # pylint: disable=too-many-arguments
+        simplug_hooks: "SimplugHooks",
+        spec: Callable,
+        required: bool,
+        result: SimplugResult,
+        warn_sync_impl_on_async: bool = False,
+    ):
         self.simplug_hooks = simplug_hooks
         self.spec = spec
         self.name = spec.__name__
@@ -248,7 +268,6 @@ class SimplugHook:
             return results[-1] if results else None
         # ALL_BUT_NONE
         return results
-
 
     def __call__(self, *args, **kwargs):
         """Call the hook in your system
@@ -280,6 +299,7 @@ class SimplugHook:
                 results.append(hook.impl(*plugin_args, **kwargs))
 
         return self._get_results(results)
+
 
 class SimplugHookAsync(SimplugHook):
     """Wrapper of an async hook"""
@@ -322,6 +342,7 @@ class SimplugHookAsync(SimplugHook):
 
         return self._get_results(results)
 
+
 class SimplugHooks:
     """The hooks manager
 
@@ -339,8 +360,8 @@ class SimplugHooks:
 
     def __init__(self):
 
-        self._registry = OrderedDiot() # type: OrderedDiot
-        self._specs = {}               # type: Dict[str, SimplugHook]
+        self._registry = OrderedDiot()  # type: OrderedDiot
+        self._specs = {}  # type: Dict[str, SimplugHook]
         self._registry_sorted = False  # type: bool
 
     def _register(self, plugin: SimplugWrapper) -> None:
@@ -354,41 +375,51 @@ class SimplugHooks:
             HookSignatureDifferentFromSpec: When the arguments of a hook
                 implementation is different from its specification
         """
-        if (plugin.name in self._registry and
-                plugin != self._registry[plugin.name]):
-            raise PluginRegistered(f'Another plugin named {plugin.name} '
-                                   'has already been registered.')
+        if (
+            plugin.name in self._registry
+            and plugin != self._registry[plugin.name]
+        ):
+            raise PluginRegistered(
+                f"Another plugin named {plugin.name} "
+                "has already been registered."
+            )
         # check if required hooks implemented
         # and signature
         for specname, spec in self._specs.items():
             hook = plugin.hook(specname)
             if spec.required and hook is None:
-                raise HookRequired(f'{specname}, but not implemented '
-                                   f'in plugin {plugin.name}')
+                raise HookRequired(
+                    f"{specname}, but not implemented "
+                    f"in plugin {plugin.name}"
+                )
             if hook is None:
                 continue
 
             impl_params = list(inspect.signature(hook.impl).parameters.keys())
             spec_params = list(inspect.signature(spec.spec).parameters.keys())
 
-            if impl_params[0] == 'self':
+            if impl_params[0] == "self":
                 impl_params = impl_params[1:]
-            if spec_params[0] == 'self':
+            if spec_params[0] == "self":
                 spec_params = spec_params[1:]
 
             if impl_params != spec_params:
                 raise HookSignatureDifferentFromSpec(
-                    f'{specname!r} in plugin {plugin.name}\n'
-                    f'Expect {spec_params}, '
-                    f'but got {impl_params}'
+                    f"{specname!r} in plugin {plugin.name}\n"
+                    f"Expect {spec_params}, "
+                    f"but got {impl_params}"
                 )
 
-            if (isinstance(spec, SimplugHookAsync) and
-                    spec.warn_sync_impl_on_async and
-                    not inspect.iscoroutinefunction(hook.impl)):
-                warnings.warn(f"Sync implementation on async hook "
-                              f"{specname!r} in plugin {plugin.name}",
-                              SyncImplOnAsyncSpecWarning)
+            if (
+                isinstance(spec, SimplugHookAsync)
+                and spec.warn_sync_impl_on_async
+                and not inspect.iscoroutinefunction(hook.impl)
+            ):
+                warnings.warn(
+                    f"Sync implementation on async hook "
+                    f"{specname!r} in plugin {plugin.name}",
+                    SyncImplOnAsyncSpecWarning,
+                )
 
         self._registry[plugin.name] = plugin
 
@@ -396,10 +427,9 @@ class SimplugHooks:
         """Sort the registry by the priority only once"""
         if self._registry_sorted:
             return
-        orderedkeys = self._registry.__diot__['orderedkeys']
-        self._registry.__diot__['orderedkeys'] = sorted(
-            orderedkeys,
-            key=lambda plug: self._registry[plug].priority
+        orderedkeys = self._registry.__diot__["orderedkeys"]
+        self._registry.__diot__["orderedkeys"] = sorted(
+            orderedkeys, key=lambda plug: self._registry[plug].priority
         )
         self._registry_sorted = True
 
@@ -422,6 +452,7 @@ class SimplugHooks:
                 exc.__traceback__
             ) from None
 
+
 class SimplugContext:
     """The context manager for enabling or disabling a set of plugins"""
 
@@ -430,9 +461,10 @@ class SimplugContext:
         if plugins is not None:
             self.simplug = simplug
             self.orig_registry = simplug.hooks._registry.copy()
-            self.orig_status = {name: plugin.enabled
-                                for name, plugin in self.orig_registry.items()}
-
+            self.orig_status = {
+                name: plugin.enabled
+                for name, plugin in self.orig_registry.items()
+            }
 
     def __enter__(self):
         if self.plugins is None:
@@ -466,11 +498,14 @@ class SimplugContext:
         for name, status in self.orig_status.items():
             self.simplug.hooks._registry[name].enabled = status
 
+
 class _SimplugContextOnly(SimplugContext):
     """The context manager with only given plugins enabled"""
 
+
 class _SimplugContextBut(SimplugContext):
     """The context manager with only given plugins disabled"""
+
     def __enter__(self):
         if self.plugins is None:
             return
@@ -495,6 +530,7 @@ class _SimplugContextBut(SimplugContext):
 
         for plugin in orig_registry.values():
             plugin.enable()
+
 
 class Simplug:
     """The plugin manager for simplug
@@ -521,7 +557,7 @@ class Simplug:
         return cls.PROJECTS[project]
 
     def __init__(self, project: str):
-        if getattr(self, '_inited', None):
+        if getattr(self, "_inited", None):
             return
         self._batch_index = 0
         self.hooks = SimplugHooks()
@@ -573,8 +609,7 @@ class Simplug:
         wrapper = self.hooks._registry[name]
         return wrapper.plugin if raw else wrapper
 
-    def get_all_plugins(self,
-                        raw: bool = False) -> Dict[str, SimplugWrapper]:
+    def get_all_plugins(self, raw: bool = False) -> Dict[str, SimplugWrapper]:
         """Get a mapping of all plugins
 
         Args:
@@ -588,12 +623,16 @@ class Simplug:
         """
         if not raw:
             return self.hooks._registry
-        return OrderedDiot([(name, plugin.plugin)
-                            for name, plugin
-                            in self.hooks._registry.items()])
+        return OrderedDiot(
+            [
+                (name, plugin.plugin)
+                for name, plugin in self.hooks._registry.items()
+            ]
+        )
 
-    def get_enabled_plugins(self,
-                            raw: bool = False) -> Dict[str, SimplugWrapper]:
+    def get_enabled_plugins(
+        self, raw: bool = False
+    ) -> Dict[str, SimplugWrapper]:
         """Get a mapping of all enabled plugins
 
         Args:
@@ -605,10 +644,13 @@ class Simplug:
         Returns:
             The mapping of all enabled plugins
         """
-        return OrderedDiot([(name, plugin.plugin if raw else plugin)
-                            for name, plugin
-                            in self.hooks._registry.items()
-                            if plugin.enabled])
+        return OrderedDiot(
+            [
+                (name, plugin.plugin if raw else plugin)
+                for name, plugin in self.hooks._registry.items()
+                if plugin.enabled
+            ]
+        )
 
     def get_all_plugin_names(self) -> List[str]:
         """Get the names of all plugins
@@ -624,12 +666,14 @@ class Simplug:
         Returns:
             The names of all enabled plugins
         """
-        return [name for name, plugin in self.hooks._registry.items()
-                if plugin.enabled]
+        return [
+            name
+            for name, plugin in self.hooks._registry.items()
+            if plugin.enabled
+        ]
 
     def plugins_only_context(
-            self,
-            plugins: Optional[Iterable[Any]]
+        self, plugins: Optional[Iterable[Any]]
     ) -> _SimplugContextOnly:
         """A context manager with only given plugins enabled
 
@@ -644,8 +688,7 @@ class Simplug:
         return _SimplugContextOnly(self, plugins)
 
     def plugins_but_context(
-            self,
-            plugins: Optional[Iterable[Any]]
+        self, plugins: Optional[Iterable[Any]]
     ) -> _SimplugContextBut:
         """A context manager with all plugins but given plugins
         enabled
@@ -677,11 +720,13 @@ class Simplug:
         for name in names:
             self.get_plugin(name).disable()
 
-    def spec(self,
-             hook: Optional[Callable] = None,
-             required: bool = False,
-             result: SimplugResult = SimplugResult.ALL_BUT_NONE,
-             warn_sync_impl_on_async: bool = True) -> Callable:
+    def spec(
+        self,
+        hook: Optional[Callable] = None,
+        required: bool = False,
+        result: SimplugResult = SimplugResult.ALL_BUT_NONE,
+        warn_sync_impl_on_async: bool = True,
+    ) -> Callable:
         """A decorator to define the specification of a hook
 
         Args:
@@ -699,6 +744,7 @@ class Simplug:
             A decorator function of other argument is passed, or the hook spec
                 itself.
         """
+
         def decorator(hook_func: Callable):
             hook_name = hook_func.__name__
             if hook_name in self.hooks._specs:
@@ -706,8 +752,11 @@ class Simplug:
 
             if inspect.iscoroutinefunction(hook_func):
                 self.hooks._specs[hook_name] = SimplugHookAsync(
-                    self.hooks, hook_func, required, result,
-                    warn_sync_impl_on_async
+                    self.hooks,
+                    hook_func,
+                    required,
+                    result,
+                    warn_sync_impl_on_async,
                 )
             else:
                 self.hooks._specs[hook_name] = SimplugHook(
@@ -732,4 +781,4 @@ class Simplug:
         """
         if hook.__name__ not in self.hooks._specs:
             raise NoSuchHookSpec(hook.__name__)
-        return SimplugImpl(hook, 'self' in inspect.signature(hook).parameters)
+        return SimplugImpl(hook, "self" in inspect.signature(hook).parameters)
