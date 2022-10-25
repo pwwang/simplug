@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 import importlib_metadata
 from diot import OrderedDiot
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
@@ -391,9 +391,9 @@ class SimplugHooks:
             impl_params = list(inspect.signature(hook.impl).parameters.keys())
             spec_params = list(inspect.signature(spec.spec).parameters.keys())
 
-            if impl_params[0] == "self":
+            if len(impl_params) > 0 and impl_params[0] == "self":
                 impl_params = impl_params[1:]
-            if spec_params[0] == "self":
+            if len(spec_params) > 0 and spec_params[0] == "self":
                 spec_params = spec_params[1:]
 
             if impl_params != spec_params:
@@ -544,7 +544,7 @@ class Simplug:
     def __new__(cls, project: str) -> "Simplug":
         if project not in cls.PROJECTS:
             obj = super().__new__(cls)
-            obj.__init__(project)
+            obj.__init__(project)  # type: ignore
             cls.PROJECTS[project] = obj
 
         return cls.PROJECTS[project]
