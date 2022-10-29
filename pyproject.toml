@@ -25,7 +25,7 @@ show_error_codes = true
 strict_optional = false
 
 [tool.pytest.ini_options]
-addopts = "-vv --cov=simplug --cov-report xml:.coverage.xml --cov-report term-missing"
+addopts = "-vv -p no:asyncio --cov=simplug --cov-report xml:.coverage.xml --cov-report term-missing"
 console_output_style = "progress"
 
 [build-system]

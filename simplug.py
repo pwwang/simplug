@@ -4,7 +4,7 @@ import warnings
 from collections import namedtuple
 from enum import Enum
 from importlib import import_module
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import importlib_metadata
 from diot import OrderedDiot
@@ -557,15 +557,23 @@ class Simplug:
         self.project = project
         self._inited = True
 
-    def load_entrypoints(self, group: Optional[str] = None):
+    def load_entrypoints(
+        self,
+        group: Optional[str] = None,
+        excludes: Union[str, Iterable[str]] = (),
+    ) -> None:
         """Load plugins from setuptools entry_points"""
         group = group or self.project
-        for dist in importlib_metadata.distributions():
-            for epoint in dist.entry_points:
-                if epoint.group != group:
-                    continue
-                plugin = epoint.load()
-                self.register((plugin, epoint.name))
+
+        if isinstance(excludes, str):
+            excludes = [excludes]
+
+        for ep in importlib_metadata.entry_points(group=group):
+            if ep.name in excludes:
+                continue
+
+            plugin = ep.load()
+            self.register((plugin, ep.name))
 
     def register(self, *plugins: Any) -> None:
         """Register plugins
