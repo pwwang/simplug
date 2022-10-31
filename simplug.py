@@ -4,7 +4,17 @@ import warnings
 from collections import namedtuple
 from enum import Enum
 from importlib import import_module
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import importlib_metadata
 from diot import OrderedDiot
@@ -30,7 +40,7 @@ class NoSuchPlugin(SimplugException):
 
 
 class PluginRegistered(SimplugException):
-    """When   a plugin with a name already registered"""
+    """When a plugin with a name already registered"""
 
 
 class NoPluginNameDefined(SimplugException):
@@ -250,19 +260,22 @@ class SimplugHook:
         self.result = result
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
 
-    def _get_results(self, results: List[Any]) -> Any:
+    def _get_results(
+        self, calls: List[Tuple[Callable, Tuple, Mapping]]
+    ) -> Any:
         """Get the results according to self.result"""
-        if self.result == SimplugResult.ALL:
-            return results
-
-        results = [result for result in results if result is not None]
         if self.result == SimplugResult.FIRST:
-            return results[0] if results else None
+            return calls[0][0](*calls[0][1], **calls[0][2])
 
         if self.result == SimplugResult.LAST:
-            return results[-1] if results else None
+            return calls[-1][0](*calls[-1][1], **calls[-1][2])
+
+        out = [call[0](*call[1], **call[2]) for call in calls]
+
+        if self.result == SimplugResult.ALL:
+            return out
         # ALL_BUT_NONE
-        return results
+        return [x for x in out if x is not None]
 
     def __call__(self, *args, **kwargs):
         """Call the hook in your system
@@ -283,7 +296,7 @@ class SimplugHook:
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
-        results = []
+        calls = []
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
                 continue
@@ -291,13 +304,33 @@ class SimplugHook:
 
             if hook is not None:
                 plugin_args = (plugin.plugin, *args) if hook.has_self else args
-                results.append(hook.impl(*plugin_args, **kwargs))
+                calls.append((hook.impl, plugin_args, kwargs))
 
-        return self._get_results(results)
+        return self._get_results(calls)
 
 
 class SimplugHookAsync(SimplugHook):
     """Wrapper of an async hook"""
+
+    async def _get_results(
+        self, calls: List[Tuple[Callable, Tuple, Mapping]]
+    ) -> Any:
+        """Get the results according to self.result"""
+        if self.result == SimplugResult.FIRST:
+            out = calls[0][0](*calls[0][1], **calls[0][2])
+            return await out if inspect.isawaitable(out) else out
+
+        if self.result == SimplugResult.LAST:
+            out = calls[-1][0](*calls[-1][1], **calls[-1][2])
+            return await out if inspect.isawaitable(out) else out
+
+        out = [call[0](*call[1], **call[2]) for call in calls]
+        out = [await x if inspect.isawaitable(x) else x for x in out]
+        if self.result == SimplugResult.ALL:
+            return out
+
+        # ALL_BUT_NONE
+        return [x for x in out if x is not None]
 
     async def __call__(self, *args, **kwargs):
         """Call the hook in your system asynchronously
@@ -318,7 +351,7 @@ class SimplugHookAsync(SimplugHook):
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
-        results = []
+        calls = []
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
                 continue
@@ -327,13 +360,9 @@ class SimplugHookAsync(SimplugHook):
                 continue
 
             plugin_args = (plugin.plugin, *args) if hook.has_self else args
-            result = hook.impl(*plugin_args, **kwargs)
-            if inspect.iscoroutine(result):
-                results.append(await result)
-            else:
-                results.append(result)
+            calls.append((hook.impl, plugin_args, kwargs))
 
-        return self._get_results(results)
+        return await self._get_results(calls)
 
 
 class SimplugHooks:
