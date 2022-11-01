@@ -4,7 +4,7 @@ A simple plugin system for python with async hooks supported
 
 ## Installation
 
-```
+```shell
 pip install -U simplug
 ```
 
@@ -45,7 +45,7 @@ results = simplug.hooks.myhook(arg1=1, arg2=2)
 print(results)
 ```
 
-```
+```shell
 inside Plugin_1.myhook()
 inside Plugin_2.myhook()
 [3, -1]
@@ -58,28 +58,33 @@ Note that the hooks are executed in the order the plugins are registered. This i
 See `examples/complete/`.
 
 Running `python -m examples.complete` gets us:
-```
+
+```shell
 Your food. Enjoy some egg, egg, egg, salt, pepper, egg, egg
 Some condiments? We have pickled walnuts, steak sauce, mushy peas, mint sauce
 ```
 
 After install the plugin:
+
 ```shell
 > pip install --editable examples.complete.plugin
 > python -m examples.complete # run again
 ```
-```
+
+```shell
 Your food. Enjoy some egg, egg, egg, salt, pepper, egg, egg, lovely spam, wonderous spam
 Some condiments? We have pickled walnuts, mushy peas, mint sauce, spam sauce
 Now this is what I call a condiments tray!
 ```
 
 ## Usage
+
 ### Definition of hooks
 
 Hooks are specified and implemented by decorating the functions with `simplug.spec` and `simplug.impl` respectively.
 
 `simplug` is initialized by:
+
 ```python
 simplug = Simplug('project')
 ```
@@ -89,6 +94,7 @@ The `'project'` is a unique name to mark the project, which makes sure `Simplug(
 Note that if `simplug` is initialized without `project`, then a name is generated automatically as such `project-0`, `project-1`, etc.
 
 Hook specification is marked by `simplug.spec`:
+
 ```python
 simplug = Simplug('project')
 
@@ -101,14 +107,16 @@ def setup(args):
 
 - `required`: Whether this hook is required to be implemented in plugins
 - `result`: An enumerator to specify the way to collec the results.
-    - SimplugResult.ALL: Get all the results from the hook, as a list
-        including `NONE`s
-    - SimplugResult.ALL_BUT_NONE: Get all the results from the hook,
-        as a list, not including `NONE`s
-    - SimplugResult.FIRST: Get the none-`None` result from the
-        first plugin only (ordered by priority)
-    - SimplugResult.LAST: Get the none-`None` result from
-        the last plugin only
+  - `SimplugResult.ALL`: Get all the results from the hook, as a list
+    including `NONE`s
+  - `SimplugResult.ALL_BUT_NONE`: Get all the results from the hook,
+    as a list, not including `NONE`s
+  - `SimplugResult.FIRST`: Get the result from the
+    first plugin only (ordered by priority), don't even run the hook from other plugins
+  - `SimplugResult.LAST`: Get the result from
+    the last plugin only, don't even run the hook from other plugins
+  - `SimplugResult.ALL_FIRST`: Run the hook from all plugins but only get the result from the first plugin
+  - `SimplugResult.ALL_LAST`: Run the hook from all plugins but only get the result from the last plugin
 
 Hook implementation is marked by `simplug.impl`, which takes no additional arguments.
 

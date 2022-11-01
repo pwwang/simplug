@@ -33,6 +33,14 @@ def test_simplug(capsys):
         def on_end(self, e=1):
             pass
 
+        @simplug.spec(result=SimplugResult.ALL_FIRST)
+        def all_first_result(self, f=1):
+            pass
+
+        @simplug.spec(result=SimplugResult.ALL_LAST)
+        def all_last_result(self, g=1):
+            pass
+
     class System:
         def __init__(self):
             simplug.hooks.on_init("arg")
@@ -51,6 +59,12 @@ def test_simplug(capsys):
 
         def no_such_hooks(self):
             return simplug.hooks._no_such_hook()
+
+        def all_first(self):
+            return simplug.hooks.all_first_result(1)
+
+        def all_last(self):
+            return simplug.hooks.all_last_result(1)
 
     class Plugin1:
         __version__ = "0.0.1"
@@ -88,6 +102,15 @@ def test_simplug(capsys):
         def on_end(self, e):
             return None
 
+        @simplug.impl
+        def all_first_result(self, f):
+            return 100
+
+        @simplug.impl
+        def all_last_result(self, g):
+            print("Plugin3: all_last_result")
+            return 1000
+
     class Plugin4:
 
         priority = -1
@@ -111,6 +134,15 @@ def test_simplug(capsys):
         @simplug.impl
         def on_end(self, e):
             return None
+
+        @simplug.impl
+        def all_first_result(self, f):
+            print("Plugin4: all_first_result")
+            return 200
+
+        @simplug.impl
+        def all_last_result(self, g):
+            return 2000
 
     class Plugin5:
         ...
@@ -155,6 +187,12 @@ def test_simplug(capsys):
     s.all() == [None] * 5
     s.end() is None
     assert "Arg: arg\n" * 3 == capsys.readouterr().out
+
+    s.all_first() == 100
+    assert "Plugin4: all_first_result\n" == capsys.readouterr().out
+
+    s.all_last() == 2000
+    assert "Plugin3: all_last_result\n" == capsys.readouterr().out
 
     with pytest.raises(NoSuchHookSpec):
         s.no_such_hooks()
@@ -253,6 +291,14 @@ def test_async_hook(capsys):
         async def ahook5(self, arg):
             pass
 
+        @simplug.spec(result=SimplugResult.ALL_FIRST)
+        async def ahook6(self, arg):
+            pass
+
+        @simplug.spec(result=SimplugResult.ALL_LAST)
+        async def ahook7(self, arg):
+            pass
+
     class Plugin1:
 
         incr = 1
@@ -278,6 +324,17 @@ def test_async_hook(capsys):
             await asyncio.sleep(0.01)
             return self.incr + arg
 
+        @simplug.impl
+        async def ahook6(self, arg):
+            await asyncio.sleep(0.01)
+            return self.incr + arg
+
+        @simplug.impl
+        async def ahook7(self, arg):
+            await asyncio.sleep(0.01)
+            print("Plugin1 - ahook7")
+            return self.incr + arg
+
     class Plugin2:
         incr = 2
 
@@ -298,6 +355,17 @@ def test_async_hook(capsys):
 
         @simplug.impl
         async def ahook5(self, arg):
+            await asyncio.sleep(0.01)
+            return self.incr + arg
+
+        @simplug.impl
+        async def ahook6(self, arg):
+            await asyncio.sleep(0.01)
+            print("Plugin2 - ahook6")
+            return self.incr + arg
+
+        @simplug.impl
+        async def ahook7(self, arg):
             await asyncio.sleep(0.01)
             return self.incr + arg
 
@@ -329,6 +397,18 @@ def test_async_hook(capsys):
     assert asyncio.run(main4()) == 3
     assert asyncio.run(main5()) == [2, 3]
     assert capsys.readouterr().out == ""
+
+    async def main6():
+        return await simplug.hooks.ahook6(1)
+
+    assert asyncio.run(main6()) == 2
+    assert capsys.readouterr().out == "Plugin2 - ahook6\n"
+
+    async def main7():
+        return await simplug.hooks.ahook7(1)
+
+    assert asyncio.run(main7()) == 3
+    assert capsys.readouterr().out == "Plugin1 - ahook7\n"
 
 
 def test_entrypoint_plugin(tmp_path):

@@ -84,6 +84,8 @@ class SimplugResult(Enum):
     ALL_BUT_NONE = "all_but_none"
     FIRST = "first"
     LAST = "last"
+    ALL_FIRST = "all_first"
+    ALL_LAST = "all_last"
 
 
 class SimplugWrapper:
@@ -272,6 +274,12 @@ class SimplugHook:
 
         out = [call[0](*call[1], **call[2]) for call in calls]
 
+        if self.result == SimplugResult.ALL_FIRST:
+            return out[0]
+
+        if self.result == SimplugResult.ALL_LAST:
+            return out[-1]
+
         if self.result == SimplugResult.ALL:
             return out
         # ALL_BUT_NONE
@@ -326,6 +334,13 @@ class SimplugHookAsync(SimplugHook):
 
         out = [call[0](*call[1], **call[2]) for call in calls]
         out = [await x if inspect.isawaitable(x) else x for x in out]
+
+        if self.result == SimplugResult.ALL_FIRST:
+            return out[0]
+
+        if self.result == SimplugResult.ALL_LAST:
+            return out[-1]
+
         if self.result == SimplugResult.ALL:
             return out
 
