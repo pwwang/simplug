@@ -1,7 +1,20 @@
-import os, sys
+import os
+import sys
 from pathlib import Path
+
 import pytest
-from simplug import *
+from diot import OrderedDiot
+from simplug import (
+    Simplug,
+    SimplugResult,
+    HookSpecExists,
+    NoSuchHookSpec,
+    NoSuchPlugin,
+    HookSignatureDifferentFromSpec,
+    HookRequired,
+    PluginRegistered,
+    SyncImplOnAsyncSpecWarning,
+)
 
 
 def test_simplug(capsys):
@@ -27,7 +40,7 @@ def test_simplug(capsys):
 
         @simplug.spec(
             result=SimplugResult.ALL,
-            collect=lambda x: "".join(str(i) for i in x)
+            collect=lambda x: "".join(str(i) for i in x),
         )
         def all_result(self, d=1):
             pass
