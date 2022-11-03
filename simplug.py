@@ -598,16 +598,16 @@ class Simplug:
     def load_entrypoints(
         self,
         group: Optional[str] = None,
-        excludes: Union[str, Iterable[str]] = (),
+        only: Union[str, Iterable[str]] = (),
     ) -> None:
         """Load plugins from setuptools entry_points"""
         group = group or self.project
 
-        if isinstance(excludes, str):
-            excludes = [excludes]
+        if isinstance(only, str):
+            only = [only]
 
         for ep in importlib_metadata.entry_points(group=group):
-            if ep.name in excludes:
+            if only and ep.name not in only:
                 continue
 
             plugin = ep.load()

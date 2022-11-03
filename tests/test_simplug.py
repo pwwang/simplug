@@ -441,7 +441,7 @@ def test_entrypoint_plugin(tmp_path):
         f"{sys.executable} {plugin_dir}/setup.py "
         f"install --install-lib {install_dir} 1>/dev/null 2>/dev/null"
     )
-    simplug.load_entrypoints(excludes="ep_plugin")
+    simplug.load_entrypoints(only="None")
     assert simplug.hooks.hook(1) == [1]
 
     simplug.load_entrypoints()
