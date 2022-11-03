@@ -253,6 +253,7 @@ class SimplugHook:
         spec: Callable,
         required: bool,
         result: SimplugResult,
+        collect: Optional[Callable] = None,
         warn_sync_impl_on_async: bool = False,
     ):
         self.simplug_hooks = simplug_hooks
@@ -260,6 +261,7 @@ class SimplugHook:
         self.name = spec.__name__
         self.required = required
         self.result = result
+        self.collect = collect
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
 
     def _get_results(
@@ -267,23 +269,19 @@ class SimplugHook:
     ) -> Any:
         """Get the results according to self.result"""
         if self.result == SimplugResult.FIRST:
-            return calls[0][0](*calls[0][1], **calls[0][2])
+            out = calls[0][0](*calls[0][1], **calls[0][2])
+        elif self.result == SimplugResult.LAST:
+            out = calls[-1][0](*calls[-1][1], **calls[-1][2])
+        else:
+            out = [call[0](*call[1], **call[2]) for call in calls]
+            if self.result == SimplugResult.ALL_FIRST:
+                out = out[0]
+            elif self.result == SimplugResult.ALL_LAST:
+                out = out[-1]
+            elif self.result == SimplugResult.ALL_BUT_NONE:
+                out = [x for x in out if x is not None]
 
-        if self.result == SimplugResult.LAST:
-            return calls[-1][0](*calls[-1][1], **calls[-1][2])
-
-        out = [call[0](*call[1], **call[2]) for call in calls]
-
-        if self.result == SimplugResult.ALL_FIRST:
-            return out[0]
-
-        if self.result == SimplugResult.ALL_LAST:
-            return out[-1]
-
-        if self.result == SimplugResult.ALL:
-            return out
-        # ALL_BUT_NONE
-        return [x for x in out if x is not None]
+        return self.collect(out) if self.collect is not None else out
 
     def __call__(self, *args, **kwargs):
         """Call the hook in your system
@@ -326,26 +324,22 @@ class SimplugHookAsync(SimplugHook):
         """Get the results according to self.result"""
         if self.result == SimplugResult.FIRST:
             out = calls[0][0](*calls[0][1], **calls[0][2])
-            return await out if inspect.isawaitable(out) else out
-
-        if self.result == SimplugResult.LAST:
+            out = await out if inspect.isawaitable(out) else out
+        elif self.result == SimplugResult.LAST:
             out = calls[-1][0](*calls[-1][1], **calls[-1][2])
-            return await out if inspect.isawaitable(out) else out
+            out = await out if inspect.isawaitable(out) else out
+        else:
+            out = [call[0](*call[1], **call[2]) for call in calls]
+            out = [await x if inspect.isawaitable(x) else x for x in out]
 
-        out = [call[0](*call[1], **call[2]) for call in calls]
-        out = [await x if inspect.isawaitable(x) else x for x in out]
+            if self.result == SimplugResult.ALL_FIRST:
+                out = out[0]
+            elif self.result == SimplugResult.ALL_LAST:
+                out = out[-1]
+            elif self.result == SimplugResult.ALL_BUT_NONE:
+                out = [x for x in out if x is not None]
 
-        if self.result == SimplugResult.ALL_FIRST:
-            return out[0]
-
-        if self.result == SimplugResult.ALL_LAST:
-            return out[-1]
-
-        if self.result == SimplugResult.ALL:
-            return out
-
-        # ALL_BUT_NONE
-        return [x for x in out if x is not None]
+        return self.collect(out) if self.collect is not None else out
 
     async def __call__(self, *args, **kwargs):
         """Call the hook in your system asynchronously
@@ -770,6 +764,7 @@ class Simplug:
         hook: Optional[Callable] = None,
         required: bool = False,
         result: SimplugResult = SimplugResult.ALL_BUT_NONE,
+        collect: Optional[Callable] = None,
         warn_sync_impl_on_async: bool = True,
     ) -> Callable:
         """A decorator to define the specification of a hook
@@ -780,6 +775,8 @@ class Simplug:
                 Otherwise, it is called like this `simplug.spec`
             required: Whether this hook is required to be implemented.
             result: How should we collect the results from the plugins
+            collect: A function to collect the results from the plugins
+            warn_sync_impl_on_async: Whether to warn when a sync implementation
 
         Raises:
             HookSpecExists: If a hook spec with the same name (`hook.__name__`)
@@ -789,28 +786,38 @@ class Simplug:
             A decorator function of other argument is passed, or the hook spec
                 itself.
         """
+        if hook is None:
+            return lambda hk: self.spec(
+                hk,
+                required=required,
+                result=result,
+                collect=collect,
+                warn_sync_impl_on_async=warn_sync_impl_on_async,
+            )
 
-        def decorator(hook_func: Callable):
-            hook_name = hook_func.__name__
-            if hook_name in self.hooks._specs:
-                raise HookSpecExists(hook_name)
+        hook_name = hook.__name__
+        if hook_name in self.hooks._specs:
+            raise HookSpecExists(hook_name)
 
-            if inspect.iscoroutinefunction(hook_func):
-                self.hooks._specs[hook_name] = SimplugHookAsync(
-                    self.hooks,
-                    hook_func,
-                    required,
-                    result,
-                    warn_sync_impl_on_async,
-                )
-            else:
-                self.hooks._specs[hook_name] = SimplugHook(
-                    self.hooks, hook_func, required, result
-                )
+        if inspect.iscoroutinefunction(hook):
+            self.hooks._specs[hook_name] = SimplugHookAsync(
+                self.hooks,
+                hook,
+                required,
+                result,
+                collect,
+                warn_sync_impl_on_async,
+            )
+        else:
+            self.hooks._specs[hook_name] = SimplugHook(
+                self.hooks,
+                hook,
+                required,
+                result,
+                collect,
+            )
 
-            return hook_func
-
-        return decorator(hook) if hook else decorator
+        return hook
 
     def impl(self, hook: Callable):
         """A decorator for the implementation of a hook

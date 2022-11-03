@@ -25,7 +25,10 @@ def test_simplug(capsys):
         def last_result(self, c=1):
             pass
 
-        @simplug.spec(result=SimplugResult.ALL)
+        @simplug.spec(
+            result=SimplugResult.ALL,
+            collect=lambda x: "".join(str(i) for i in x)
+        )
         def all_result(self, d=1):
             pass
 
@@ -184,7 +187,7 @@ def test_simplug(capsys):
     s = System()
     s.first() == 40
     s.last() == 300
-    s.all() == [None] * 5
+    s.all() == "None" * 5
     s.end() is None
     assert "Arg: arg\n" * 3 == capsys.readouterr().out
 
