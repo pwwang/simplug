@@ -19,7 +19,7 @@ from typing import (
 import importlib_metadata
 from diot import OrderedDiot
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
