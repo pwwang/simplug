@@ -1,12 +1,15 @@
 import os
 import sys
+import asyncio
 from pathlib import Path
 
 import pytest
-from diot import OrderedDiot
 from simplug import (
+    makecall,
     Simplug,
     SimplugResult,
+    SimplugWrapper,
+    ResultUnavailableError,
     HookSpecExists,
     NoSuchHookSpec,
     NoSuchPlugin,
@@ -17,414 +20,1017 @@ from simplug import (
 )
 
 
-def test_simplug(capsys):
+@pytest.fixture
+def test_suite(request):
+    simplug = Simplug(request.node.name)
+    plugins = {}
 
-    simplug = Simplug("project")
+    class Suite:
+        def add_hook(self, result, required=False):
+            def decorator(func):
+                simplug.spec(func, result=result, required=required)
+            return decorator
 
-    class PluginSpec:
-        @simplug.spec
-        def pre_init(self, a=1):
-            pass
+        def add_impl(self, plugin_name):
+            def decorator(func):
+                if plugin_name not in plugins:
+                    class Plugin:
+                        name = plugin_name
+                    plugins[plugin_name] = Plugin
 
-        @simplug.spec(required=True)
-        def on_init(self, arg):
-            pass
+                setattr(plugins[plugin_name], func.__name__, simplug.impl(func))
+            return decorator
 
-        @simplug.spec(result=SimplugResult.FIRST)
-        def first_result(self, b=1):
-            pass
+        def disable_plugin(self, plugin_name):
+            simplug.get_plugin(plugin_name).disable()
 
-        @simplug.spec(result=SimplugResult.LAST)
-        def last_result(self, c=1):
-            pass
+        def enable_plugin(self, plugin_name):
+            simplug.get_plugin(plugin_name).enable()
 
-        @simplug.spec(
-            result=SimplugResult.ALL,
-            collect=lambda x: "".join(str(i) for i in x),
-        )
-        def all_result(self, d=1):
-            pass
+        def get_simplug(self):
+            return simplug
 
-        @simplug.spec(result=SimplugResult.ALL_BUT_NONE)
-        def on_end(self, e=1):
-            pass
+        def get_plugin(self, name):
+            return simplug.get_plugin(name)
 
-        @simplug.spec(result=SimplugResult.ALL_FIRST)
-        def all_first_result(self, f=1):
-            pass
+        def get_all_plugins(self, raw=False):
+            return simplug.get_all_plugins(raw=raw)
 
-        @simplug.spec(result=SimplugResult.ALL_LAST)
-        def all_last_result(self, g=1):
-            pass
+        def get_enabled_plugins(self, raw=False):
+            return simplug.get_enabled_plugins(raw=raw)
 
-    class System:
-        def __init__(self):
-            simplug.hooks.on_init("arg")
+        def __getattr__(self, name):
+            registered = simplug.get_all_plugin_names()
+            simplug.register(
+                *(plugins[n] for n in plugins if n not in registered)
+            )
+            return getattr(simplug.hooks, name)
 
-        def first(self):
-            return simplug.hooks.first_result(1)
+    return Suite()
 
-        def last(self):
-            return simplug.hooks.last_result(1)
 
-        def all(self):
-            return simplug.hooks.all_result(1)
-
-        def end(self):
-            return simplug.hooks.on_end(1)
-
-        def no_such_hooks(self):
-            return simplug.hooks._no_such_hook()
-
-        def all_first(self):
-            return simplug.hooks.all_first_result(1)
-
-        def all_last(self):
-            return simplug.hooks.all_last_result(1)
-
-    class Plugin1:
-        __version__ = "0.0.1"
-
-        def __init__(self, name):
-            self.__name__ = name
-
-        @simplug.impl
-        def on_init(self, arg):
-            print("Arg:", arg)
-
-    class Plugin2:
-        @simplug.impl
-        def on_init(self, arg):
-            print("Arg:", arg)
-
-    class Plugin3:
-        @simplug.impl
-        def on_init(self, arg):
-            pass
-
-        @simplug.impl
-        def first_result(self, b):
-            return 30
-
-        @simplug.impl
-        def last_result(self, c):
-            return 300
-
-        @simplug.impl
-        def all_result(self, d):
-            return 5000
-
-        @simplug.impl
-        def on_end(self, e):
-            return None
-
-        @simplug.impl
-        def all_first_result(self, f):
-            return 100
-
-        @simplug.impl
-        def all_last_result(self, g):
-            print("Plugin3: all_last_result")
-            return 1000
-
-    class Plugin4:
-
-        priority = -1
-
-        @simplug.impl
-        def on_init(self, arg):
-            pass
-
-        @simplug.impl
-        def first_result(self, b):
-            return 40
-
-        @simplug.impl
-        def last_result(self, c):
-            return 400
-
-        @simplug.impl
-        def all_result(self, d):
-            return None
-
-        @simplug.impl
-        def on_end(self, e):
-            return None
-
-        @simplug.impl
-        def all_first_result(self, f):
-            print("Plugin4: all_first_result")
-            return 200
-
-        @simplug.impl
-        def all_last_result(self, g):
-            return 2000
-
-    class Plugin5:
+def test_result_all(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
         ...
 
-    class Plugin6:
-        @simplug.impl
-        def on_init(self, diff_arg):
-            pass
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
 
-    with pytest.raises(HookSpecExists):
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return arg + 2
 
-        @simplug.spec
-        def on_init():
-            pass
-
-    with pytest.raises(NoSuchHookSpec):
-
-        @simplug.impl
-        def no_such_hook():
-            pass
-
-    with pytest.raises(NoSuchPlugin):
-        simplug.register("nosuch")
-    with pytest.raises(HookRequired):
-        simplug.register(Plugin5)
-    with pytest.raises(HookSignatureDifferentFromSpec):
-        simplug.register(Plugin6)
-
-    plug1 = Plugin1("plugin-1")
-    plug2 = Plugin2()
-    simplug.register(plug1, Plugin1, plug2, Plugin3, Plugin4)
-
-    plg1 = simplug.get_plugin("plugin-1")
-    assert plg1.version == "0.0.1"
-
-    with pytest.raises(PluginRegistered):
-        simplug.register(Plugin3())
-
-    s = System()
-    s.first() == 40
-    s.last() == 300
-    s.all() == "None" * 5
-    s.end() is None
-    assert "Arg: arg\n" * 3 == capsys.readouterr().out
-
-    s.all_first() == 100
-    assert "Plugin4: all_first_result\n" == capsys.readouterr().out
-
-    s.all_last() == 2000
-    assert "Plugin3: all_last_result\n" == capsys.readouterr().out
-
-    with pytest.raises(NoSuchHookSpec):
-        s.no_such_hooks()
-
-    simplug.disable("plugin2")
-    System()
-    assert "Arg: arg\n" * 2 == capsys.readouterr().out
-
-    simplug.enable("plugin2")
-    System()
-    assert "Arg: arg\n" * 3 == capsys.readouterr().out
-
-    with pytest.raises(NoSuchPlugin):
-        simplug.get_plugin("nosuchplugin")
-
-    assert simplug.get_all_plugin_names() == [
-        "plugin4",
-        "plugin-1",
-        "plugin1",
-        "plugin2",
-        "plugin3",
-    ]
-
-    all_plugins = simplug.get_all_plugins()
-    assert isinstance(all_plugins, OrderedDiot)
-    assert list(all_plugins.keys()) == [
-        "plugin4",
-        "plugin-1",
-        "plugin1",
-        "plugin2",
-        "plugin3",
-    ]
-    simplug.disable("plugin-1")
-    assert simplug.get_all_plugins(raw=True) == {
-        "plugin-1": plug1,
-        "plugin1": Plugin1,
-        "plugin2": plug2,
-        "plugin3": Plugin3,
-        "plugin4": Plugin4,
-    }
-    assert simplug.get_enabled_plugins(raw=True) == {
-        "plugin1": Plugin1,
-        "plugin2": plug2,
-        "plugin3": Plugin3,
-        "plugin4": Plugin4,
-    }
-    assert simplug.get_enabled_plugin_names() == [
-        "plugin4",
-        "plugin1",
-        "plugin2",
-        "plugin3",
-    ]
+    assert test_suite.hook(1) == [2, 3]
 
 
-def test_simplug_module(capsys):
-    simplug = Simplug("simplug_module")
-
-    class PluginSpec:
-        @simplug.spec
-        def on_init(self, arg):
-            pass
-
-    class System:
-        def __init__(self):
-            simplug.hooks.on_init("arg")
-
-    simplug.register(f"{'.'.join(__name__.split('.')[:-1])}.plugin_module")
-    System()
-
-    assert "Arg: arg\n" == capsys.readouterr().out
-
-
-def test_async_hook(capsys):
-    import asyncio
-
-    simplug = Simplug("async_hook")
-
-    class HookSpec:
-        @simplug.spec
-        async def ahook(self, arg):
-            pass
-
-        @simplug.spec
-        async def ahook2(self, arg):
-            pass
-
-        @simplug.spec(result=SimplugResult.FIRST)
-        async def ahook3(self, arg):
-            pass
-
-        @simplug.spec(result=SimplugResult.LAST)
-        async def ahook4(self, arg):
-            pass
-
-        @simplug.spec(result=SimplugResult.ALL)
-        async def ahook5(self, arg):
-            pass
-
-        @simplug.spec(result=SimplugResult.ALL_FIRST)
-        async def ahook6(self, arg):
-            pass
-
-        @simplug.spec(result=SimplugResult.ALL_LAST)
-        async def ahook7(self, arg):
-            pass
-
-    class Plugin1:
-
-        incr = 1
-
-        @simplug.impl
-        async def ahook(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook3(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook4(self, arg):
-            await asyncio.sleep(0.01)
-            print("Plugin1 - ahook4")
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook5(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook6(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook7(self, arg):
-            await asyncio.sleep(0.01)
-            print("Plugin1 - ahook7")
-            return self.incr + arg
-
-    class Plugin2:
-        incr = 2
-
-        @simplug.impl
-        def ahook(self, arg):
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook3(self, arg):
-            await asyncio.sleep(0.01)
-            print("Plugin2 - ahook3")
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook4(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook5(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook6(self, arg):
-            await asyncio.sleep(0.01)
-            print("Plugin2 - ahook6")
-            return self.incr + arg
-
-        @simplug.impl
-        async def ahook7(self, arg):
-            await asyncio.sleep(0.01)
-            return self.incr + arg
-
-    class Plugin3(Plugin1):
+def test_result_all_async(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    async def hook(arg):
         ...
 
-    simplug.register(Plugin1, Plugin3)
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return arg + 2
+
+    assert asyncio.run(test_suite.hook(1)) == [2, 3]
+
+
+def test_result_all_avails(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_AVAILS)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return None
+
+    assert test_suite.hook(1) == [2]
+
+
+def test_result_all_avails_async(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_AVAILS)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return None
+
+    assert asyncio.run(test_suite.hook(1)) == [2]
+
+
+def test_result_all_first(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        print("hello")
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_first_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        print("hello")
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_first_error(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL_FIRST)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_all_last(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_LAST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return arg + 1
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_last_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_LAST)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return arg + 1
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_last_error(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_LAST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL_LAST)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_try_all_first(test_suite):
+
+    @test_suite.add_hook(SimplugResult.TRY_ALL_FIRST)
+    def hook(arg):
+        ...
+
+    assert test_suite.hook(1) is None
+
+
+def test_result_try_all_first_async(test_suite):
+
+    @test_suite.add_hook(SimplugResult.TRY_ALL_FIRST)
+    async def hook(arg):
+        ...
+
+    assert asyncio.run(test_suite.hook(1)) is None
+
+
+def test_result_try_all_last(test_suite):
+
+    @test_suite.add_hook(SimplugResult.TRY_ALL_LAST)
+    def hook(arg):
+        ...
+
+    assert test_suite.hook(1) is None
+
+
+def test_result_try_all_last_async(test_suite):
+
+    @test_suite.add_hook(SimplugResult.TRY_ALL_LAST)
+    async def hook(arg):
+        ...
+
+    assert asyncio.run(test_suite.hook(1)) is None
+
+
+def test_result_all_first_avail(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin3")
+    def hook(arg):
+        print("hello")
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_first_avail_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin3")
+    async def hook(arg):
+        print("hello")
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_first_avail_error(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL_FIRST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin1")
+    async def ahook(arg):
+        return None
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_try_all_first_avail(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_ALL_FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
+    assert test_suite.hook(1) is None
+
+
+def test_result_try_all_first_avail_async(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_ALL_FIRST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return None
+
+    assert asyncio.run(test_suite.hook(1)) is None
+
+
+def test_result_all_last_avail(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin3")
+    def hook(arg):
+        return None
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_last_avail_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.ALL_LAST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin3")
+    async def hook(arg):
+        return None
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == "hello"
+
+
+def test_result_all_last_avail_error(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL_LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
+    @test_suite.add_hook(SimplugResult.ALL_LAST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def ahook(arg):
+        return None
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_try_all_last_avail(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_ALL_LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
+    assert test_suite.hook(1) is None
+
+
+def test_result_try_all_last_avail_async(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_ALL_LAST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return None
+
+    assert asyncio.run(test_suite.hook(1)) is None
+
+
+def test_result_first(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.FIRST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        print("hello")
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_first_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.FIRST)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        print("hello")
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_first_error(test_suite):
+    @test_suite.add_hook(SimplugResult.FIRST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.FIRST)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_last(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.LAST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return arg + 1
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_last_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.LAST)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return arg + 1
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_last_error(test_suite):
+    @test_suite.add_hook(SimplugResult.LAST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.LAST)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_try_first(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_FIRST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_FIRST)
+    async def ahook(arg):
+        ...
+
+    assert test_suite.hook(1) is None
+    assert asyncio.run(test_suite.ahook(1)) is None
+
+
+def test_result_try_last(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_LAST)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_LAST)
+    async def ahook(arg):
+        ...
+
+    assert test_suite.hook(1) is None
+    assert asyncio.run(test_suite.ahook(1)) is None
+
+
+def test_result_first_avail(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        print("hello")
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_first_avail_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.FIRST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    async def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        print("hello")
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_first_avail_error(test_suite):
+    @test_suite.add_hook(SimplugResult.FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.FIRST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_last_avail(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    def hook(arg):
+        return None
+
+    assert test_suite.hook(1) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_last_avail_async(test_suite, capsys):
+    @test_suite.add_hook(SimplugResult.LAST_AVAIL)
+    async def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    async def hook(arg):
+        print("hello")
+
+    @test_suite.add_impl("plugin1")
+    async def hook(arg):
+        return arg + 1
+
+    @test_suite.add_impl("plugin2")
+    async def hook(arg):
+        return None
+
+    assert asyncio.run(test_suite.hook(1)) == 2
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_result_last_avail_error(test_suite):
+    @test_suite.add_hook(SimplugResult.LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.LAST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+
+def test_result_try_first_avail(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_FIRST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_FIRST_AVAIL)
+    def hook1(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_FIRST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_FIRST_AVAIL)
+    async def ahook1(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin0")
+    def hook1(arg):
+        return 1
+
+    @test_suite.add_impl("plugin0")
+    async def ahook(arg):
+        return None
+
+    @test_suite.add_impl("plugin0")
+    async def ahook1(arg):
+        return 1
+
+    assert test_suite.hook(1) is None
+    assert asyncio.run(test_suite.ahook(1)) is None
+    assert test_suite.hook1(1) == 1
+    assert asyncio.run(test_suite.ahook1(1)) == 1
+
+
+def test_result_try_last_avail(test_suite):
+    @test_suite.add_hook(SimplugResult.TRY_LAST_AVAIL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_LAST_AVAIL)
+    def hook1(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_LAST_AVAIL)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.TRY_LAST_AVAIL)
+    async def ahook1(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return None
+
+    @test_suite.add_impl("plugin0")
+    def hook1(arg):
+        return 1
+
+    @test_suite.add_impl("plugin0")
+    async def ahook(arg):
+        return None
+
+    @test_suite.add_impl("plugin0")
+    async def ahook1(arg):
+        return 1
+
+    assert test_suite.hook(1) is None
+    assert asyncio.run(test_suite.ahook(1)) is None
+    assert test_suite.hook1(1) == 1
+    assert asyncio.run(test_suite.ahook1(1)) == 1
+
+
+def test_result_custom(test_suite):
+    async def custom_result(calls):
+        return " ".join([await makecall(call, True) for call in calls])
+
+    @test_suite.add_hook(
+        lambda calls: " ".join(makecall(call) for call in calls)
+    )
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(custom_result)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return "hello"
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return "world"
+
+    @test_suite.add_impl("plugin0")
+    async def ahook(arg):
+        return "hello,"
+
+    @test_suite.add_impl("plugin1")
+    def ahook(arg):
+        return "world!"
 
     with pytest.warns(SyncImplOnAsyncSpecWarning):
-        simplug.register(Plugin2)
+        out1 = test_suite.hook(1)
+        out2 = asyncio.run(test_suite.ahook(1))
 
-    simplug.disable("plugin3")
+    assert out1 == "hello world"
+    assert out2 == "hello, world!"
 
-    async def main():
-        await simplug.hooks.ahook2(1)
-        return await simplug.hooks.ahook(1)
 
-    async def main3():
-        return await simplug.hooks.ahook3(1)
+def test_no_such_plugin_module():
+    plugin = Simplug("test_no_such_plugin_module")
+    with pytest.raises(NoSuchPlugin):
+        plugin.register("no_such_module")
 
-    async def main4():
-        return await simplug.hooks.ahook4(1)
 
-    async def main5():
-        return await simplug.hooks.ahook5(1)
+def test_plugin_name_and_version():
+    plugin1 = Simplug("test_plugin_version1")
+    plugin2 = Simplug("test_plugin_version2")
 
-    assert asyncio.run(main()) == [2, 3]
-    assert asyncio.run(main3()) == 2
-    assert asyncio.run(main4()) == 3
-    assert asyncio.run(main5()) == [2, 3]
-    assert capsys.readouterr().out == ""
+    class Plugin:
+        version = "0.1.0"
 
-    async def main6():
-        return await simplug.hooks.ahook6(1)
+    plugin1.register(Plugin)
+    assert plugin1.get_plugin("plugin").name == "plugin"
+    assert plugin1.get_plugin("plugin").version == "0.1.0"
 
-    assert asyncio.run(main6()) == 2
-    assert capsys.readouterr().out == "Plugin2 - ahook6\n"
+    plugin2.register(Plugin())
+    assert plugin1.get_plugin("plugin").name == "plugin"
+    assert plugin1.get_plugin("plugin").version == "0.1.0"
 
-    async def main7():
-        return await simplug.hooks.ahook7(1)
 
-    assert asyncio.run(main7()) == 3
-    assert capsys.readouterr().out == "Plugin1 - ahook7\n"
+def test_get_hook():
+    plugin = Simplug("test_get_hook")
+
+    @plugin.spec
+    def hook(arg):
+        ...
+
+    class Plugin:
+        @plugin.impl
+        def hook(arg):
+            return arg + 1
+
+    plugin.register(Plugin)
+
+    assert plugin.get_plugin("plugin").hook("hook") is Plugin.hook
+    assert plugin.get_plugin("plugin").hook("hook2") is None
+
+
+def test_plugin_enable_disable(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return 1
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return 2
+
+    @test_suite.add_hook(SimplugResult.ALL)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    async def ahook(arg):
+        return 1
+
+    @test_suite.add_impl("plugin1")
+    async def ahook(arg):
+        return 2
+
+    assert test_suite.hook(1) == [1, 2]
+
+    test_suite.disable_plugin("plugin0")
+    assert test_suite.hook(1) == [2]
+    assert asyncio.run(test_suite.ahook(1)) == [2]
+
+    test_suite.enable_plugin("plugin0")
+    assert test_suite.hook(1) == [1, 2]
+    assert asyncio.run(test_suite.ahook(1)) == [1, 2]
+
+    simplug = test_suite.get_simplug()
+
+    simplug.disable("plugin0")
+    assert test_suite.hook(1) == [2]
+    assert asyncio.run(test_suite.ahook(1)) == [2]
+
+    simplug.enable("plugin0")
+    assert test_suite.hook(1) == [1, 2]
+    assert asyncio.run(test_suite.ahook(1)) == [1, 2]
+
+
+def test_plugin_eq(test_suite):
+
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return 1
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return 2
+
+    assert test_suite.hook(1) == [1, 2]
+    assert test_suite.get_plugin("plugin0") == test_suite.get_plugin("plugin0")
+    assert test_suite.get_plugin("plugin0") != test_suite.get_plugin("plugin1")
+
+
+def test_plugin_registered():
+    plugin = Simplug("test_plugin_registered")
+
+    class Plugin:
+        ...
+
+    plugin.register(Plugin)
+    with pytest.raises(PluginRegistered):
+        plugin.register(Plugin())
+
+
+def test_hook_required(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL, required=True)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook1(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook1(arg):
+        return 1
+
+    with pytest.raises(HookRequired):
+        test_suite.hook(1)
+
+
+def test_spec_self(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(self, arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return arg + 1
+
+    assert test_suite.hook(1) == [2]
+
+
+def test_impl_self(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(self, arg):
+        return arg + 1
+
+    assert test_suite.hook(1) == [2]
+
+
+def test_impl_signature_differs(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg, arg2):
+        return arg + 1
+
+    with pytest.raises(HookSignatureDifferentFromSpec):
+        test_suite.hook(1)
+
+
+def test_no_such_hook(test_suite):
+    with pytest.raises(NoSuchHookSpec):
+        test_suite.nosuchook()
+
+
+def test_no_such_plugin(test_suite):
+    with pytest.raises(NoSuchPlugin):
+        test_suite.disable_plugin("nosuchplugin")
+
+
+def test_get_all_plugins(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return 1
+
+    assert test_suite.hook(1) == [1]
+    assert isinstance(
+        test_suite.get_all_plugins(raw=False)["plugin0"],
+        SimplugWrapper,
+    )
+    assert not isinstance(
+        test_suite.get_all_plugins(raw=True)["plugin0"],
+        SimplugWrapper,
+    )
+    assert isinstance(
+        test_suite.get_enabled_plugins(raw=False)["plugin0"],
+        SimplugWrapper,
+    )
+    assert not isinstance(
+        test_suite.get_enabled_plugins(raw=True)["plugin0"],
+        SimplugWrapper,
+    )
+
+
+def test_hook_exists(test_suite):
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook(arg):
+        ...
+
+    with pytest.raises(HookSpecExists):
+        @test_suite.add_hook(SimplugResult.ALL)
+        def hook(arg):
+            ...
+
+
+def test_no_hook_spec_while_impl(test_suite):
+    with pytest.raises(NoSuchHookSpec):
+        @test_suite.add_impl("plugin0")
+        def hook(arg):
+            return 1
 
 
 def test_entrypoint_plugin(tmp_path):
@@ -432,7 +1038,7 @@ def test_entrypoint_plugin(tmp_path):
     simplug = Simplug("simplug_entrypoint_test")
 
     class Hooks:
-        @simplug.spec
+        @simplug.spec()
         def hook(arg):
             ...
 

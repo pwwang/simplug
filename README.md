@@ -103,20 +103,29 @@ def setup(args):
     ...
 ```
 
-`simplug.spec` can take two keyword-arguments:
+`simplug.spec` can take some arguments:
 
 - `required`: Whether this hook is required to be implemented in plugins
 - `result`: An enumerator to specify the way to collec the results.
-  - `SimplugResult.ALL`: Get all the results from the hook, as a list
-    including `NONE`s
-  - `SimplugResult.ALL_BUT_NONE`: Get all the results from the hook,
-    as a list, not including `NONE`s
-  - `SimplugResult.FIRST`: Get the result from the
-    first plugin only (ordered by priority), don't even run the hook from other plugins
-  - `SimplugResult.LAST`: Get the result from
-    the last plugin only, don't even run the hook from other plugins
-  - `SimplugResult.ALL_FIRST`: Run the hook from all plugins but only get the result from the first plugin
-  - `SimplugResult.ALL_LAST`: Run the hook from all plugins but only get the result from the last plugin
+  - `SimplugResult.ALL`: Collect all results from all plugins
+  - `SimplugResult.ALL_AVAILS`: Get all the results from the hook, as a list, not including `None`s
+  - `SimplugResult.ALL_FIRST`: Executing all implementations and get the first result
+  - `SimplugResult.ALL_LAST`: Executing all implementations and get the last result
+  - `SimplugResult.TRY_ALL_FIRST`: Executing all implementations and get the first result, if no result is returned, return `None`
+  - `SimplugResult.TRY_ALL_LAST`: Executing all implementations and get the last result, if no result is returned, return `None`
+  - `SimplugResult.ALL_FIRST_AVAIL`: Executing all implementations and get the first non-`None` result
+  - `SimplugResult.ALL_LAST_AVAIL`: Executing all implementations and get the last non-`None` result
+  - `SimplugResult.TRY_ALL_FIRST_AVAIL`: Executing all implementations and get the first non-`None` result, if no result is returned, return `None`
+  - `SimplugResult.TRY_ALL_LAST_AVAIL`: Executing all implementations and get the last non-`None` result, if no result is returned, return `None`
+  - `SimplugResult.FIRST`: Get the first result, don't execute other implementations
+  - `SimplugResult.LAST`: Get the last result, don't execute other implementations
+  - `SimplugResult.TRY_FIRST`: Get the first result, don't execute other implementations, if no result is returned, return `None`
+  - `SimplugResult.TRY_LAST`: Get the last result, don't execute other implementations, if no result is returned, return `None`
+  - `SimplugResult.FIRST_AVAIL`: Get the first non-`None` result, don't execute other implementations
+  - `SimplugResult.LAST_AVAIL`: Get the last non-`None` result, don't execute other implementations
+  - `SimplugResult.TRY_FIRST_AVAIL`: Get the first non-`None` result, don't execute other implementations, if no result is returned, return `None`
+  - `SimplugResult.TRY_LAST_AVAIL`: Get the last non-`None` result, don't execute other implementations, if no result is returned, return `None`
+  - A callable to collect the result, take `calls` as the argument, a 3-element tuple with first element as the implementation, second element as the positional arguments, and third element as the keyword arguments.
 
 Hook implementation is marked by `simplug.impl`, which takes no additional arguments.
 

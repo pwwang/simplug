@@ -2,6 +2,7 @@ from simplug import Simplug
 
 simplug = Simplug('complete_example')
 
+
 @simplug.impl
 def add_ingredients(ingredients):
     """Here the caller expects us to return a list."""

@@ -2,7 +2,7 @@ import itertools
 
 from simplug import Simplug
 # make sure specs are imported
-from . import hookspecs
+from . import hookspecs  # noqa: F401
 from . import lib
 
 simplug = Simplug('complete_example')
@@ -10,6 +10,7 @@ simplug.register(lib)
 simplug.load_entrypoints()
 
 condiments_tray = {"pickled walnuts": 13, "steak sauce": 4, "mushy peas": 2}
+
 
 class EggsellentCook:
     FAVORITE_INGREDIENTS = ("egg", "egg", "egg")
@@ -35,6 +36,7 @@ class EggsellentCook:
         print(f"Some condiments? We have {', '.join(condiments_tray.keys())}")
         if any(condiment_comments):
             print("\n".join(condiment_comments))
+
 
 def main():
     cook = EggsellentCook(simplug.hooks)
