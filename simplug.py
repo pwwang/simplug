@@ -198,11 +198,11 @@ class SimplugWrapper:
             self.plugin = plugin
 
         priority = getattr(self.plugin, "priority", None)
-        self.priority = (
+        self.priority: Tuple[int, int] = (
             (batch_index, index)
             if priority is None
             else (priority, batch_index)
-        )  # type: Tuple[int, int]
+        )
 
         self.enabled = True  # type: bool
 

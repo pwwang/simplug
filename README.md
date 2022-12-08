@@ -125,6 +125,8 @@ def setup(args):
   - `SimplugResult.LAST_AVAIL`: Get the last non-`None` result, don't execute other implementations
   - `SimplugResult.TRY_FIRST_AVAIL`: Get the first non-`None` result, don't execute other implementations, if no result is returned, return `None`
   - `SimplugResult.TRY_LAST_AVAIL`: Get the last non-`None` result, don't execute other implementations, if no result is returned, return `None`
+  - `SimplugResult.SINGLE`: Get the result from a single implementation
+  - `SimplugResult.TRY_SINGLE`: Get the result from a single implementation, if no result is returned, return `None`
   - A callable to collect the result, take `calls` as the argument, a 3-element tuple with first element as the implementation, second element as the positional arguments, and third element as the keyword arguments.
 
 Hook implementation is marked by `simplug.impl`, which takes no additional arguments.
