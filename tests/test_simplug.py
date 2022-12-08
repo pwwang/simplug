@@ -17,6 +17,7 @@ from simplug import (
     HookRequired,
     PluginRegistered,
     SyncImplOnAsyncSpecWarning,
+    MultipleImplsForSingleResultHookWarning,
 )
 
 
@@ -767,6 +768,77 @@ def test_result_try_last_avail(test_suite):
     assert asyncio.run(test_suite.ahook(1)) is None
     assert test_suite.hook1(1) == 1
     assert asyncio.run(test_suite.ahook1(1)) == 1
+
+
+def test_result_single(test_suite):
+    @test_suite.add_hook(SimplugResult.SINGLE)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.SINGLE)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_impl("plugin0")
+    def hook(arg):
+        return 1
+
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return 2
+
+    @test_suite.add_impl("plugin0")
+    async def ahook(arg):
+        return 1
+
+    @test_suite.add_impl("plugin1")
+    async def ahook(arg):
+        return 2
+
+    with pytest.warns(MultipleImplsForSingleResultHookWarning):
+        assert test_suite.hook(1) == 2
+
+    with pytest.warns(MultipleImplsForSingleResultHookWarning):
+        assert asyncio.run(test_suite.ahook(1)) == 2
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1, __plugin="plugin2")
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1, __plugin="plugin2"))
+
+    assert test_suite.hook(1, __plugin="plugin0") == 1
+    assert asyncio.run(test_suite.ahook(1, __plugin="plugin0")) == 1
+
+
+def test_result_single_error(test_suite):
+    @test_suite.add_hook(SimplugResult.SINGLE)
+    def hook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.SINGLE)
+    async def ahook(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL)
+    def hook1(arg):
+        ...
+
+    @test_suite.add_hook(SimplugResult.ALL)
+    async def ahook1(arg):
+        ...
+
+    with pytest.raises(ResultUnavailableError):
+        test_suite.hook(1)
+
+    with pytest.raises(ResultUnavailableError):
+        asyncio.run(test_suite.ahook(1))
+
+    with pytest.raises(ValueError):
+        test_suite.hook1(1, __plugin="plugin0")
+
+    with pytest.raises(ValueError):
+        asyncio.run(test_suite.ahook1(1, __plugin="plugin0"))
 
 
 def test_result_custom(test_suite):

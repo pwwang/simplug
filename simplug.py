@@ -12,7 +12,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Mapping,
     Optional,
     Tuple,
 )
@@ -29,6 +28,19 @@ This is used to mark the method/function to be an implementation of a hook.
 
 Args:
     impl: The hook implementation
+"""
+
+SimplugImplCall = namedtuple(
+    "SimplugImplCall",
+    ["plugin", "impl", "args", "kwargs"],
+)
+SimplugImplCall.__doc__ = """A namedtuple wrapper for hook implementation call.
+
+Args:
+    plugin: The name of the plugin
+    impl: The hook implementation
+    args: The positional arguments
+    kwargs: The keyword arguments
 """
 
 
@@ -72,6 +84,10 @@ class SyncImplOnAsyncSpecWarning(Warning):
     """When a sync implementation on an async hook"""
 
 
+class MultipleImplsForSingleResultHookWarning(Warning):
+    """When multiple implementations for a single-result hook"""
+
+
 class SimplugResult(Enum):
     """Way to get the results from the hooks
 
@@ -87,28 +103,34 @@ class SimplugResult(Enum):
         excute the other the implementations
     TRY - Return `None` instead of raising `ResultUnavailableError` when
         no result is available
+    SINGLE - Get the result from a single implementation
     """
-    ALL = 0
-    ALL_AVAILS = 1
-    ALL_FIRST = 2
-    ALL_LAST = 3
-    TRY_ALL_FIRST = 4
-    TRY_ALL_LAST = 5
-    ALL_FIRST_AVAIL = 6
-    ALL_LAST_AVAIL = 7
-    TRY_ALL_FIRST_AVAIL = 8
-    TRY_ALL_LAST_AVAIL = 9
-    FIRST = 10
-    LAST = 11
-    TRY_FIRST = 12
-    TRY_LAST = 13
-    FIRST_AVAIL = 14
-    LAST_AVAIL = 15
-    TRY_FIRST_AVAIL = 16
-    TRY_LAST_AVAIL = 17
+
+    # 0b  1    1    1    1111
+    #    TRY  ALL AVAIL   ID
+    ALL = 0b010_0000  # 64
+    ALL_AVAILS = 0b011_0001  # 97
+    ALL_FIRST = 0b010_0010  # 66
+    TRY_ALL_FIRST = 0b110_0010  # 194
+    ALL_LAST = 0b010_0011  # 67
+    TRY_ALL_LAST = 0b110_0011  # 195
+    ALL_FIRST_AVAIL = 0b011_0100  # 102
+    TRY_ALL_FIRST_AVAIL = 0b111_0100  # 230
+    ALL_LAST_AVAIL = 0b011_0101  # 103
+    TRY_ALL_LAST_AVAIL = 0b111_0101  # 231
+    FIRST = 0b000_0110  # 10
+    TRY_FIRST = 0b100_0110  # 138
+    LAST = 0b000_0111  # 11
+    TRY_LAST = 0b100_0111  # 139
+    FIRST_AVAIL = 0b001_1000  # 46
+    TRY_FIRST_AVAIL = 0b101_1000  # 174
+    LAST_AVAIL = 0b001_1001  # 47
+    TRY_LAST_AVAIL = 0b101_1001  # 175
+    SINGLE = 0b000_1010  # 18
+    TRY_SINGLE = 0b100_1010  # 146
 
 
-def makecall(call: Tuple[Callable, Tuple, Mapping], async_hook: bool = False):
+def makecall(call: SimplugImplCall, async_hook: bool = False):
     """Make a call to an implementation and arguments
 
     Args:
@@ -117,7 +139,7 @@ def makecall(call: Tuple[Callable, Tuple, Mapping], async_hook: bool = False):
     Returns:
         The result of the call
     """
-    out = call[0](*call[1], **call[2])
+    out = call.impl(*call.args, **call.kwargs)
     if not async_hook:
         return out
 
@@ -305,79 +327,86 @@ class SimplugHook:
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
 
     def _get_results(
-        self, calls: List[Tuple[Callable, Tuple, Mapping]]
+        self,
+        calls: List[SimplugImplCall],
+        plugin: str,
+        result: SimplugResult | Callable | int = None,
     ) -> Any:
         """Get the results according to self.result"""
-        if callable(self.result):
-            return self.result(calls)
+        result = self.result if result is None else result
 
-        if self.result.value < 10:
+        if callable(result):
+            return result(calls)
+
+        if isinstance(result, SimplugResult):
+            result = result.value
+
+        # 0b  1    1    1    1111
+        #    TRY  ALL AVAIL   ID
+        if result & 0b100_0000:
+            try:
+                return self._get_results(calls, plugin, result & 0b011_1111)
+            except ResultUnavailableError:
+                return None
+
+        if result & 0b010_0000:
             out = [makecall(call) for call in calls]
-            if self.result == SimplugResult.ALL:
+            if result == SimplugResult.ALL.value:
                 return out
-            if self.result == SimplugResult.ALL_AVAILS:
+            if result == SimplugResult.ALL_AVAILS.value:
                 return [x for x in out if x is not None]
-            if self.result == SimplugResult.ALL_FIRST:
+            if result == SimplugResult.ALL_FIRST.value:
                 if not out:
                     raise ResultUnavailableError
                 return out[0]
-            if self.result == SimplugResult.ALL_LAST:
+            if result == SimplugResult.ALL_LAST.value:
                 if not out:
                     raise ResultUnavailableError
                 return out[-1]
-            if self.result == SimplugResult.TRY_ALL_FIRST:
-                return out[0] if out else None
-            if self.result == SimplugResult.TRY_ALL_LAST:
-                return out[-1] if out else None
-            if self.result == SimplugResult.ALL_FIRST_AVAIL:
+            if result == SimplugResult.ALL_FIRST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
                 return next(x for x in out if x is not None)
-            if self.result == SimplugResult.ALL_LAST_AVAIL:
+            if result == SimplugResult.ALL_LAST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
                 return next(x for x in reversed(out) if x is not None)
-            if self.result == SimplugResult.TRY_ALL_FIRST_AVAIL:
-                return next((x for x in out if x is not None), None)
-            if self.result == SimplugResult.TRY_ALL_LAST_AVAIL:
-                return next((x for x in reversed(out) if x is not None), None)
 
-        if self.result == SimplugResult.FIRST:
+        if result == SimplugResult.FIRST.value:
             if not calls:
                 raise ResultUnavailableError
             return makecall(calls[0])
-        if self.result == SimplugResult.LAST:
+        if result == SimplugResult.LAST.value:
             if not calls:
                 raise ResultUnavailableError
             return makecall(calls[-1])
-        if self.result == SimplugResult.TRY_FIRST:
-            return makecall(calls[0]) if calls else None
-        if self.result == SimplugResult.TRY_LAST:
-            return makecall(calls[-1]) if calls else None
-        if self.result == SimplugResult.FIRST_AVAIL:
+        if result == SimplugResult.FIRST_AVAIL.value:
             for call in calls:
                 ret = makecall(call)
                 if ret is not None:
                     return ret
             raise ResultUnavailableError
-        if self.result == SimplugResult.LAST_AVAIL:
+        if result == SimplugResult.LAST_AVAIL.value:
             for call in reversed(calls):
                 ret = makecall(call)
                 if ret is not None:
                     return ret
             raise ResultUnavailableError
-        if self.result == SimplugResult.TRY_FIRST_AVAIL:
+        if result == SimplugResult.SINGLE.value:
+            if not calls:
+                raise ResultUnavailableError
             for call in calls:
-                ret = makecall(call)
-                if ret is not None:
-                    return ret
-            return None
-        if self.result == SimplugResult.TRY_LAST_AVAIL:
-            for call in reversed(calls):
-                ret = makecall(call)
-                if ret is not None:
-                    return ret
-            return None
+                if call.plugin == plugin:
+                    return makecall(call)
+            if plugin is not None:
+                raise ResultUnavailableError
+            if len(calls) > 1:
+                warnings.warn(
+                    f"More than one implementation of {self.name} found, "
+                    "but no plugin was specified. Using the last one.",
+                    MultipleImplsForSingleResultHookWarning,
+                )
+            return makecall(calls[-1])
 
     def __call__(self, *args, **kwargs):
         """Call the hook in your system
@@ -398,6 +427,12 @@ class SimplugHook:
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
+        if self.result != SimplugResult.SINGLE and "__plugin" in kwargs:
+            raise ValueError(
+                "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
+            )
+
+        _plugin = kwargs.pop("__plugin", None)
         calls = []
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
@@ -406,88 +441,103 @@ class SimplugHook:
 
             if hook is not None:
                 plugin_args = (plugin.plugin, *args) if hook.has_self else args
-                calls.append((hook.impl, plugin_args, kwargs))
+                calls.append(
+                    SimplugImplCall(
+                        plugin.name, hook.impl, plugin_args, kwargs
+                    )
+                )
 
-        return self._get_results(calls)
+        return self._get_results(calls, plugin=_plugin)
 
 
 class SimplugHookAsync(SimplugHook):
     """Wrapper of an async hook"""
 
     async def _get_results(
-        self, calls: List[Tuple[Callable, Tuple, Mapping]]
+        self,
+        calls: List[SimplugImplCall],
+        plugin: str,
+        result: SimplugResult | Callable | int = None,
     ) -> Any:
         """Get the results according to self.result"""
-        if callable(self.result):
-            return await self.result(calls)
+        result = self.result if result is None else result
 
-        if self.result.value < 10:
+        if callable(result):
+            return await result(calls)
+
+        if isinstance(result, SimplugResult):
+            result = result.value
+
+        # 0b  1    1    1    1111
+        #    TRY  ALL AVAIL   ID
+        if result & 0b100_0000:
+            try:
+                return await self._get_results(
+                    calls,
+                    plugin,
+                    result & 0b011_1111,
+                )
+            except ResultUnavailableError:
+                return None
+
+        if result & 0b010_0000:
             out = [await makecall(call, True) for call in calls]
-            if self.result == SimplugResult.ALL:
+            if result == SimplugResult.ALL.value:
                 return out
-            if self.result == SimplugResult.ALL_AVAILS:
+            if result == SimplugResult.ALL_AVAILS.value:
                 return [x for x in out if x is not None]
-            if self.result == SimplugResult.ALL_FIRST:
+            if result == SimplugResult.ALL_FIRST.value:
                 if not out:
                     raise ResultUnavailableError
                 return out[0]
-            if self.result == SimplugResult.ALL_LAST:
+            if result == SimplugResult.ALL_LAST.value:
                 if not out:
                     raise ResultUnavailableError
                 return out[-1]
-            if self.result == SimplugResult.TRY_ALL_FIRST:
-                return out[0] if out else None
-            if self.result == SimplugResult.TRY_ALL_LAST:
-                return out[-1] if out else None
-            if self.result == SimplugResult.ALL_FIRST_AVAIL:
+            if result == SimplugResult.ALL_FIRST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
                 return next(x for x in out if x is not None)
-            if self.result == SimplugResult.ALL_LAST_AVAIL:
+            if result == SimplugResult.ALL_LAST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
                 return next(x for x in reversed(out) if x is not None)
-            if self.result == SimplugResult.TRY_ALL_FIRST_AVAIL:
-                return next((x for x in out if x is not None), None)
-            if self.result == SimplugResult.TRY_ALL_LAST_AVAIL:
-                return next((x for x in reversed(out) if x is not None), None)
 
-        if self.result == SimplugResult.FIRST:
+        if result == SimplugResult.FIRST.value:
             if not calls:
                 raise ResultUnavailableError
             return await makecall(calls[0], True)
-        if self.result == SimplugResult.LAST:
+        if result == SimplugResult.LAST.value:
             if not calls:
                 raise ResultUnavailableError
             return await makecall(calls[-1], True)
-        if self.result == SimplugResult.TRY_FIRST:
-            return await makecall(calls[0], True) if calls else None
-        if self.result == SimplugResult.TRY_LAST:
-            return await makecall(calls[-1], True) if calls else None
-        if self.result == SimplugResult.FIRST_AVAIL:
+        if result == SimplugResult.FIRST_AVAIL.value:
             for call in calls:
                 ret = await makecall(call, True)
                 if ret is not None:
                     return ret
             raise ResultUnavailableError
-        if self.result == SimplugResult.LAST_AVAIL:
+        if result == SimplugResult.LAST_AVAIL.value:
             for call in reversed(calls):
                 ret = await makecall(call, True)
                 if ret is not None:
                     return ret
             raise ResultUnavailableError
-        if self.result == SimplugResult.TRY_FIRST_AVAIL:
+        if result == SimplugResult.SINGLE.value:
+            if not calls:
+                raise ResultUnavailableError
             for call in calls:
-                ret = await makecall(call, True)
-                if ret is not None:
-                    return ret
-            return None
-        if self.result == SimplugResult.TRY_LAST_AVAIL:
-            for call in reversed(calls):
-                ret = await makecall(call, True)
-                if ret is not None:
-                    return ret
-            return None
+                if call.plugin == plugin:
+                    return await makecall(call, True)
+            if plugin is not None:
+                raise ResultUnavailableError
+            if len(calls) > 1:
+                warnings.warn(
+                    f"More than one implementation of {self.name} found, "
+                    "but no plugin was specified. Using the last one.",
+                    MultipleImplsForSingleResultHookWarning,
+                )
+            return await makecall(calls[-1], True)
 
     async def __call__(self, *args, **kwargs):
         """Call the hook in your system asynchronously
@@ -508,6 +558,12 @@ class SimplugHookAsync(SimplugHook):
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
+        if self.result != SimplugResult.SINGLE and "__plugin" in kwargs:
+            raise ValueError(
+                "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
+            )
+
+        _plugin = kwargs.pop("__plugin", None)
         calls = []
         for plugin in self.simplug_hooks._registry.values():
             if not plugin.enabled:
@@ -517,9 +573,11 @@ class SimplugHookAsync(SimplugHook):
                 continue
 
             plugin_args = (plugin.plugin, *args) if hook.has_self else args
-            calls.append((hook.impl, plugin_args, kwargs))
+            calls.append(
+                SimplugImplCall(plugin.name, hook.impl, plugin_args, kwargs)
+            )
 
-        return await self._get_results(calls)
+        return await self._get_results(calls, plugin=_plugin)
 
 
 class SimplugHooks:
