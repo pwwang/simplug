@@ -150,6 +150,7 @@ The python object must have an attribute `name`, `__name__` or `__class.__name__
 If a plugin is loaded from setuptools entrypoint, then the entrypoint name will be used (no matter what name is defined inside the plugin)
 
 You can enable or disable a plugin temporarily after registration by:
+
 ```python
 simplug.disable('plugin_name')
 simplug.enable('plugin_name')
@@ -170,6 +171,7 @@ Hooks are call by `simplug.hooks.<hook_name>(<arguments>)` and results are colle
 ### Async hooks
 
 It makes no big difference to define an async hook:
+
 ```python
 @simplug.spec
 async def async_hook(arg):
