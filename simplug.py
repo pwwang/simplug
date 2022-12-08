@@ -427,7 +427,10 @@ class SimplugHook:
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
-        if self.result != SimplugResult.SINGLE and "__plugin" in kwargs:
+        if (
+            self.result not in (SimplugResult.SINGLE, SimplugResult.TRY_SINGLE)
+            and "__plugin" in kwargs
+        ):
             raise ValueError(
                 "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
             )
@@ -558,7 +561,10 @@ class SimplugHookAsync(SimplugHook):
                 the last plugin only
         """
         self.simplug_hooks._sort_registry()
-        if self.result != SimplugResult.SINGLE and "__plugin" in kwargs:
+        if (
+            self.result not in (SimplugResult.SINGLE, SimplugResult.TRY_SINGLE)
+            and "__plugin" in kwargs
+        ):
             raise ValueError(
                 "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
             )
