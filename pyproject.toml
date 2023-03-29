@@ -11,7 +11,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.7"
 diot = "^0.1"
-importlib-metadata = "^4"
+importlib-metadata = "^6"
+
+[tool.poetry.build]
+generate-setup-file = true
 
 [tool.poetry.dev-dependencies]
 pytest = "^7"
