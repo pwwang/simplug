@@ -817,7 +817,12 @@ class Simplug:
         if isinstance(only, str):
             only = [only]
 
-        for ep in metadata.entry_points(group=group):
+        try:
+            eps = metadata.entry_points(group=group)
+        except TypeError:  # pragma: no cover
+            eps = metadata.entry_points().get(group, [])
+
+        for ep in eps:
             if only and ep.name not in only:
                 continue
 
