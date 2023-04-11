@@ -37,7 +37,7 @@ jobs:
         if: ${{ always() }}
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
-        if: matrix.python-version == "3.10"
+        if: matrix.python-version == 3.10
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: .coverage.xml
