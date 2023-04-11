@@ -5,7 +5,7 @@ import inspect
 import warnings
 from collections import namedtuple
 from enum import Enum
-from importlib import import_module
+from importlib import import_module, metadata
 from typing import (
     Any,
     Callable,
@@ -16,7 +16,6 @@ from typing import (
     Tuple,
 )
 
-import importlib_metadata
 from diot import OrderedDiot
 
 __version__ = "0.2.3"
@@ -818,7 +817,7 @@ class Simplug:
         if isinstance(only, str):
             only = [only]
 
-        for ep in importlib_metadata.entry_points(group=group):
+        for ep in metadata.entry_points(group=group):
             if only and ep.name not in only:
                 continue
 
