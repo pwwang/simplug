@@ -90,14 +90,14 @@ toml = ["tomli"]
 
 [[package]]
 name = "diot"
-version = "0.2.0"
+version = "0.2.1"
 description = "Python dictionary with dot notation."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "diot-0.2.0-py3-none-any.whl", hash = "sha256:9e869127cd798694f5ae7b193ec78fd5f329395b2763f823d50d12c32211ee63"},
-    {file = "diot-0.2.0.tar.gz", hash = "sha256:cbf7f76a77b7dced9935ca72785bc5d06d5f645f363feb231aa5cb2d74427880"},
+    {file = "diot-0.2.1-py3-none-any.whl", hash = "sha256:d37bf5df36a257386e4836ab33f393f7ee945f262587b8c5b88ad86e1d3eb261"},
+    {file = "diot-0.2.1.tar.gz", hash = "sha256:e8767e712f29886d7dcff1866a383a2ed9eeb9699ae58486ec58f3e6247afa06"},
 ]
 
 [package.dependencies]
