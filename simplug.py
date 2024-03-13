@@ -1,20 +1,14 @@
 """A simple entrypoint-free plugin system for python"""
 from __future__ import annotations
 
+import sys
 import inspect
 import warnings
 from collections import namedtuple
+from contextlib import nullcontext
 from enum import Enum
 from importlib import import_module, metadata
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-)
+from typing import Any, Callable, Dict, Iterable, List, Tuple
 
 from diot import OrderedDiot
 
@@ -206,7 +200,7 @@ class SimplugWrapper:
         self.enabled = True  # type: bool
 
     @property
-    def version(self) -> Optional[str]:
+    def version(self) -> str | None:
         """Try to get the version of the plugin.
 
         If the attribute `version` is definied, use it. Otherwise, try to check
@@ -266,7 +260,7 @@ class SimplugWrapper:
         """Disable this plugin"""
         self.enabled = False
 
-    def hook(self, name: str) -> Optional[SimplugImpl]:
+    def hook(self, name: str) -> SimplugImpl | None:
         """Get the hook implementation of this plugin by name
 
         Args:
@@ -698,80 +692,66 @@ class SimplugHooks:
 class SimplugContext:
     """The context manager for enabling or disabling a set of plugins"""
 
-    def __init__(self, simplug: "Simplug", plugins: Optional[Iterable[Any]]):
+    def __init__(self, simplug: "Simplug", plugins: Iterable[Any]):
+        self.only = self._check_plugins(plugins)
         self.plugins = plugins
-        if plugins is not None:
-            self.simplug = simplug
-            self.orig_registry = simplug.hooks._registry.copy()
-            self.orig_status = {
-                name: plugin.enabled
-                for name, plugin in self.orig_registry.items()
-            }
+        self.simplug = simplug
+        self.orig_registry = simplug.hooks._registry.copy()
+        self.orig_status = {
+            name: plugin.enabled
+            for name, plugin in self.orig_registry.items()
+        }
+
+    def _check_plugins(self, plugins: Iterable[Any]) -> bool:
+        """Check if the given plugins are valid and if all are only mode
+        (without prefixes) return True"""
+        onlys = [
+            isinstance(plug, str) and not plug.startswith(("+", "-"))
+            for plug in plugins
+        ]
+        if all(onlys):
+            return True
+        if any(onlys):
+            raise SimplugException(
+                "The plugins should be all with prefixes (+, -) or without."
+            )
+
+    def _raise(self, exc: Exception):
+        """Raise the exception and restore the original status"""
+        self.__exit__(*sys.exc_info())
+        raise exc
 
     def __enter__(self):
-        if self.plugins is None:
-            return
-        orig_registry = self.orig_registry.copy()
+        if self.only:
+            for plugin in self.orig_registry.values():
+                plugin.disable()
+
         # raw
-        orig_names = list(orig_registry.keys())
-        orig_raws = [plugin.plugin for plugin in orig_registry.values()]
+        orig_names = list(self.orig_registry)
+        orig_raws = [plugin.plugin for plugin in self.orig_registry.values()]
 
         for plugin in self.plugins:
-            if isinstance(plugin, str) and plugin in orig_registry:
-                orig_registry[plugin].enable()
-                del orig_registry[plugin]
-            elif plugin in orig_registry.values():
+            if plugin in self.orig_registry.values():
                 plugin.enable()
-                del orig_registry[plugin.name]
             elif plugin in orig_raws:
                 name = orig_names[orig_raws.index(plugin)]
-                orig_registry[name].enable()
-                del orig_registry[name]
-            else:
+                self.orig_registry[name].enable()
+            elif not isinstance(plugin, str):
                 self.simplug.register(plugin)
-
-        for plugin in orig_registry.values():
-            plugin.disable()
+            elif plugin.startswith("-"):
+                if plugin[1:] not in self.orig_registry:
+                    self._raise(NoSuchPlugin(plugin[1:]))
+                self.orig_registry[plugin[1:]].disable()
+            else:
+                plugin = plugin[1:] if plugin.startswith("+") else plugin
+                if plugin not in self.orig_registry:
+                    self._raise(NoSuchPlugin(plugin))
+                self.orig_registry[plugin].enable()
 
     def __exit__(self, *exc):
-        if self.plugins is None:
-            return
         self.simplug.hooks._registry = self.orig_registry
         for name, status in self.orig_status.items():
             self.simplug.hooks._registry[name].enabled = status
-
-
-class _SimplugContextOnly(SimplugContext):
-    """The context manager with only given plugins enabled"""
-
-
-class _SimplugContextBut(SimplugContext):
-    """The context manager with only given plugins disabled"""
-
-    def __enter__(self):
-        if self.plugins is None:
-            return
-
-        orig_registry = self.orig_registry.copy()
-        # raw
-        orig_names = list(orig_registry.keys())
-        orig_raws = [plugin.plugin for plugin in orig_registry.values()]
-
-        for plugin in self.plugins:
-            if isinstance(plugin, str) and plugin in orig_registry:
-                orig_registry[plugin].disable()
-                del orig_registry[plugin]
-            elif plugin in orig_registry.values():
-                plugin.disable()
-                del orig_registry[plugin.name]
-            elif plugin in orig_raws:
-                name = orig_names[orig_raws.index(plugin)]
-                orig_registry[name].disable()
-                del orig_registry[name]
-            # ignore plugin not existing
-
-        for plugin in orig_registry.values():
-            plugin.enable()
 
 
 class Simplug:
@@ -808,7 +788,7 @@ class Simplug:
 
     def load_entrypoints(
         self,
-        group: Optional[str] = None,
+        group: str | None = None,
         only: str | Iterable[str] = (),
     ) -> None:
         """Load plugins from setuptools entry_points"""
@@ -927,35 +907,46 @@ class Simplug:
             if plugin.enabled
         ]
 
-    def plugins_only_context(
-        self, plugins: Optional[Iterable[Any]]
-    ) -> _SimplugContextOnly:
-        """A context manager with only given plugins enabled
+    def plugins_context(self, plugins: Iterable[Any] | None) -> SimplugContext:
+        """A context manager with given plugins enabled or disabled
 
         Args:
             plugins: The plugin names or plugin objects
                 If the given plugin does not exist, register it.
-                None to not enable or disable anything
+                None to not enable or disable anything.
+                When the context exits, the original status of the plugins
+                will be restored.
+                You can use `+` or `-` to enable or disable a plugin. If a
+                plugin is already enabled or disabled, it will be ignored.
+                If a plugin name is given without a prefix, it will be
+                enabled and all other plugins will be disabled. If a plugin
+                is given as a plugin itself, not a name, it will be regarded as
+                `+`.
+
+        Examples:
+            >>> # enabled: plugin1, plugin2; disabled: plugin3
+            >>> with simplug.plugins_context(['plugin3']):
+            >>>     # enabled: plugin3; disabled: plugin1, plugin2
+            >>>     pass
+            >>> # enabled: plugin1, plugin2; disabled: plugin3
+            >>> with simplug.plugins_context(['+plugin3']):
+            >>>     # enabled: plugin1, plugin2, plugin3
+            >>>     pass
+            >>> # enabled: plugin1, plugin2; disabled: plugin3
+            >>> with simplug.plugins_context(['-plugin1']):
+            >>>     # enabled: plugin2; disabled: plugin1, plugin3
+            >>>     pass
+            >>> # enabled: plugin1, plugin2; disabled: plugin3
+            >>> with simplug.plugins_context(['-plugin1', '+plugin3']):
+            >>>     # enabled: plugin2, plugin3; disabled: plugin1
+            >>>     pass
 
         Returns:
             The context manager
         """
-        return _SimplugContextOnly(self, plugins)
-
-    def plugins_but_context(
-        self, plugins: Optional[Iterable[Any]]
-    ) -> _SimplugContextBut:
-        """A context manager with all plugins but given plugins
-        enabled
-
-        Args:
-            *plugins: The plugin names or plugin objects to exclude
-                If the given plugin does not exist, ignore it
-
-        Returns:
-            The context manager
-        """
-        return _SimplugContextBut(self, plugins)
+        if plugins is None:
+            return nullcontext()
+        return SimplugContext(self, plugins)
 
     def enable(self, *names: str) -> None:
         """Enable plugins by names
@@ -977,7 +968,7 @@ class Simplug:
 
     def spec(
         self,
-        hook: Optional[Callable] = None,
+        hook: Callable | None = None,
         required: bool = False,
         result: SimplugResult | Callable = SimplugResult.ALL_AVAILS,
         warn_sync_impl_on_async: bool = True,
