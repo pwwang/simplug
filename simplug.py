@@ -596,9 +596,9 @@ class SimplugHooks:
 
     def __init__(self):
 
-        self._registry = OrderedDiot()  # type: OrderedDiot
-        self._specs = {}  # type: Dict[str, SimplugHook]
-        self._registry_sorted = False  # type: bool
+        self._registry = OrderedDiot()
+        self._specs = {}
+        self._registry_sorted = False
 
     def _register(self, plugin: SimplugWrapper) -> None:
         """Register a plugin (already wrapped by SimplugWrapper)
@@ -715,6 +715,7 @@ class SimplugContext:
             raise SimplugException(
                 "The plugins should be all with prefixes (+, -) or without."
             )
+        return False
 
     def _raise(self, exc: Exception):
         """Raise the exception and restore the original status"""
@@ -798,9 +799,9 @@ class Simplug:
             only = [only]
 
         try:
-            eps = metadata.entry_points(group=group)
+            eps = metadata.entry_points(group=group)  # type: ignore
         except TypeError:  # pragma: no cover
-            eps = metadata.entry_points().get(group, [])
+            eps = metadata.entry_points().get(group, [])  # type: ignore
 
         for ep in eps:
             if only and ep.name not in only:
@@ -907,7 +908,10 @@ class Simplug:
             if plugin.enabled
         ]
 
-    def plugins_context(self, plugins: Iterable[Any] | None) -> SimplugContext:
+    def plugins_context(
+        self,
+        plugins: Iterable[Any] | None
+    ) -> SimplugContext | nullcontext:
         """A context manager with given plugins enabled or disabled
 
         Args:
