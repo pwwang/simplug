@@ -740,9 +740,8 @@ class SimplugContext:
             elif not isinstance(plugin, str):
                 self.simplug.register(plugin)
             elif plugin.startswith("-"):
-                if plugin[1:] not in self.orig_registry:
-                    self._raise(NoSuchPlugin(plugin[1:]))
-                self.orig_registry[plugin[1:]].disable()
+                if plugin[1:] in self.orig_registry:
+                    self.orig_registry[plugin[1:]].disable()
             else:
                 plugin = plugin[1:] if plugin.startswith("+") else plugin
                 if plugin not in self.orig_registry:

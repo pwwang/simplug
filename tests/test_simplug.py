@@ -1229,9 +1229,10 @@ def test_context_non_only():
         with simplug.plugins_context(["plugin1", "-plugin2"]):
             ...
 
-    with pytest.raises(SimplugException):
-        with simplug.plugins_context(["-pluginxxx"]):
-            ...
+    # with pytest.raises(SimplugException):
+    # Allow plugins to not exist with "-"
+    with simplug.plugins_context(["-pluginxxx"]):
+        ...
 
     with simplug.plugins_context(
         [
