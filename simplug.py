@@ -791,7 +791,14 @@ class Simplug:
         group: str | None = None,
         only: str | Iterable[str] = (),
     ) -> None:
-        """Load plugins from setuptools entry_points"""
+        """Load plugins from setuptools entry_points
+
+        Args:
+            group: The group of the entry_points
+            only: The names of the entry_points to load. If it's a str, it
+                means only load this entry_point. If it's a list of str, it
+                means load all the entry_points in the list.
+        """
         group = group or self.project
 
         if isinstance(only, str):
