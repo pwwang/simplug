@@ -396,7 +396,7 @@ class SimplugHook:
             if len(calls) > 1:
                 warnings.warn(
                     f"More than one implementation of {self.name} found, "
-                    "but no plugin was specified. Using the last one.",
+                    "but a single result is expected. Using the last one.",
                     MultipleImplsForSingleResultHookWarning,
                 )
             return makecall(calls[-1])
