@@ -831,6 +831,10 @@ class Simplug:
 
         self._batch_index += 1
 
+        if len(plugins) == 1 and callable(plugins[0]):
+            # allow to use as a decorator
+            return plugins[0]
+
     def get_plugin(self, name: str, raw: bool = False) -> object:
         """Get the plugin wrapper or the raw plugin object
 
