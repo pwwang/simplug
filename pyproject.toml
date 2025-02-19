@@ -9,8 +9,8 @@ repository  = "https://github.com/pwwang/simplug"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-diot = "^0.2"
+python = "^3.9"
+diot = "^0.3"
 
 [tool.poetry.build]
 generate-setup-file = true
