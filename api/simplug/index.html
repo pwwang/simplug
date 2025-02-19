@@ -1,0 +1,3403 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-7.2.3">
+    
+    
+      
+        <title>API - simplug</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f7f47774.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../css/mkapi-common.css">
+    
+      <link rel="stylesheet" href="../../style.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#simplug" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="simplug" class="md-header__button md-logo" aria-label="simplug" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            simplug
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="simplug" class="md-nav__button md-logo" aria-label="simplug" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    simplug
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        API
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simplug" class="md-nav__link">
+    simplug
+  </a>
+  
+    <nav class="md-nav" aria-label="simplug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimpl" class="md-nav__link">
+    SimplugImpl
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimplcall" class="md-nav__link">
+    SimplugImplCall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugexception" class="md-nav__link">
+    SimplugException
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnosuchplugin" class="md-nav__link">
+    NoSuchPlugin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugresultunavailableerror" class="md-nav__link">
+    ResultUnavailableError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugpluginregistered" class="md-nav__link">
+    PluginRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnopluginnamedefined" class="md-nav__link">
+    NoPluginNameDefined
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughooksignaturedifferentfromspec" class="md-nav__link">
+    HookSignatureDifferentFromSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnosuchhookspec" class="md-nav__link">
+    NoSuchHookSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughookrequired" class="md-nav__link">
+    HookRequired
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughookspecexists" class="md-nav__link">
+    HookSpecExists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsyncimplonasyncspecwarning" class="md-nav__link">
+    SyncImplOnAsyncSpecWarning
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugmultipleimplsforsingleresulthookwarning" class="md-nav__link">
+    MultipleImplsForSingleResultHookWarning
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugresult" class="md-nav__link">
+    SimplugResult
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugResult">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtype" class="md-nav__link">
+    EnumType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypecontains" class="md-nav__link">
+    contains
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypegetitem" class="md-nav__link">
+    getitem
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypeiter" class="md-nav__link">
+    iter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypelen" class="md-nav__link">
+    len
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugmakecall" class="md-nav__link">
+    makecall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapper" class="md-nav__link">
+    SimplugWrapper
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugWrapper">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperenable" class="md-nav__link">
+    enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperdisable" class="md-nav__link">
+    disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperhook" class="md-nav__link">
+    hook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughook" class="md-nav__link">
+    SimplugHook
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookcall" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookasync" class="md-nav__link">
+    SimplugHookAsync
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHookAsync">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookasynccall" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughooks" class="md-nav__link">
+    SimplugHooks
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughooksgetattr" class="md-nav__link">
+    getattr
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugcontext" class="md-nav__link">
+    SimplugContext
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplug" class="md-nav__link">
+    Simplug
+  </a>
+  
+    <nav class="md-nav" aria-label="Simplug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugload_entrypoints" class="md-nav__link">
+    load_entrypoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugregister" class="md-nav__link">
+    register
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_plugin" class="md-nav__link">
+    get_plugin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_all_plugins" class="md-nav__link">
+    get_all_plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_enabled_plugins" class="md-nav__link">
+    get_enabled_plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_all_plugin_names" class="md-nav__link">
+    get_all_plugin_names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_enabled_plugin_names" class="md-nav__link">
+    get_enabled_plugin_names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugplugins_context" class="md-nav__link">
+    plugins_context
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_1" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_2" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_3" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+    <nav class="md-nav" aria-label="enabled: plugin1, plugin2; disabled: plugin3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugenable" class="md-nav__link">
+    enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugdisable" class="md-nav__link">
+    disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugspec" class="md-nav__link">
+    spec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimpl_1" class="md-nav__link">
+    impl
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simplug" class="md-nav__link">
+    simplug
+  </a>
+  
+    <nav class="md-nav" aria-label="simplug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimpl" class="md-nav__link">
+    SimplugImpl
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimplcall" class="md-nav__link">
+    SimplugImplCall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugexception" class="md-nav__link">
+    SimplugException
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnosuchplugin" class="md-nav__link">
+    NoSuchPlugin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugresultunavailableerror" class="md-nav__link">
+    ResultUnavailableError
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugpluginregistered" class="md-nav__link">
+    PluginRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnopluginnamedefined" class="md-nav__link">
+    NoPluginNameDefined
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughooksignaturedifferentfromspec" class="md-nav__link">
+    HookSignatureDifferentFromSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugnosuchhookspec" class="md-nav__link">
+    NoSuchHookSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughookrequired" class="md-nav__link">
+    HookRequired
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplughookspecexists" class="md-nav__link">
+    HookSpecExists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsyncimplonasyncspecwarning" class="md-nav__link">
+    SyncImplOnAsyncSpecWarning
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugmultipleimplsforsingleresulthookwarning" class="md-nav__link">
+    MultipleImplsForSingleResultHookWarning
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugresult" class="md-nav__link">
+    SimplugResult
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugResult">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtype" class="md-nav__link">
+    EnumType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypecontains" class="md-nav__link">
+    contains
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypegetitem" class="md-nav__link">
+    getitem
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypeiter" class="md-nav__link">
+    iter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumenumtypelen" class="md-nav__link">
+    len
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugmakecall" class="md-nav__link">
+    makecall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapper" class="md-nav__link">
+    SimplugWrapper
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugWrapper">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperenable" class="md-nav__link">
+    enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperdisable" class="md-nav__link">
+    disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugwrapperhook" class="md-nav__link">
+    hook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughook" class="md-nav__link">
+    SimplugHook
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookcall" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookasync" class="md-nav__link">
+    SimplugHookAsync
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHookAsync">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughookasynccall" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughooks" class="md-nav__link">
+    SimplugHooks
+  </a>
+  
+    <nav class="md-nav" aria-label="SimplugHooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplughooksgetattr" class="md-nav__link">
+    getattr
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugcontext" class="md-nav__link">
+    SimplugContext
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplug" class="md-nav__link">
+    Simplug
+  </a>
+  
+    <nav class="md-nav" aria-label="Simplug">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugload_entrypoints" class="md-nav__link">
+    load_entrypoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugregister" class="md-nav__link">
+    register
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_plugin" class="md-nav__link">
+    get_plugin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_all_plugins" class="md-nav__link">
+    get_all_plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_enabled_plugins" class="md-nav__link">
+    get_enabled_plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_all_plugin_names" class="md-nav__link">
+    get_all_plugin_names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugget_enabled_plugin_names" class="md-nav__link">
+    get_enabled_plugin_names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugplugins_context" class="md-nav__link">
+    plugins_context
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_1" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_2" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabled-plugin1-plugin2-disabled-plugin3_3" class="md-nav__link">
+    enabled: plugin1, plugin2; disabled: plugin3
+  </a>
+  
+    <nav class="md-nav" aria-label="enabled: plugin1, plugin2; disabled: plugin3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugenable" class="md-nav__link">
+    enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugdisable" class="md-nav__link">
+    disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugspec" class="md-nav__link">
+    spec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplugsimplugimpl_1" class="md-nav__link">
+    impl
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>API</h1>
+                
+                <div class="mkapi-node" id="simplug">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="simplug" class="mkapi-object-body module top"><span class="mkapi-object-name">simplug</span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug" title="Source for simplug">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A simple entrypoint-free plugin system for python</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugImpl">SimplugImpl</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A namedtuple wrapper for hook implementation.<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugImpl" title="Source for simplug.SimplugImpl">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugImplCall">SimplugImplCall</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A namedtuple wrapper for hook implementation call.<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugImplCall" title="Source for simplug.SimplugImplCall">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugException">SimplugException</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base exception class for simplug<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugException" title="Source for simplug.SimplugException">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.NoSuchPlugin">NoSuchPlugin</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a plugin cannot be imported<a class="mkapi-src-link" href="../source/simplug/#simplug.NoSuchPlugin" title="Source for simplug.NoSuchPlugin">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.ResultUnavailableError">ResultUnavailableError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a result is not available<a class="mkapi-src-link" href="../source/simplug/#simplug.ResultUnavailableError" title="Source for simplug.ResultUnavailableError">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.PluginRegistered">PluginRegistered</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a plugin with a name already registered<a class="mkapi-src-link" href="../source/simplug/#simplug.PluginRegistered" title="Source for simplug.PluginRegistered">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.NoPluginNameDefined">NoPluginNameDefined</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When the name of the plugin cannot be found<a class="mkapi-src-link" href="../source/simplug/#simplug.NoPluginNameDefined" title="Source for simplug.NoPluginNameDefined">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.HookSignatureDifferentFromSpec">HookSignatureDifferentFromSpec</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When the hook signature is different from spec<a class="mkapi-src-link" href="../source/simplug/#simplug.HookSignatureDifferentFromSpec" title="Source for simplug.HookSignatureDifferentFromSpec">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.NoSuchHookSpec">NoSuchHookSpec</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When implemented a undefined hook or calling a non-exist hook<a class="mkapi-src-link" href="../source/simplug/#simplug.NoSuchHookSpec" title="Source for simplug.NoSuchHookSpec">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.HookRequired">HookRequired</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a required hook is not implemented<a class="mkapi-src-link" href="../source/simplug/#simplug.HookRequired" title="Source for simplug.HookRequired">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.HookSpecExists">HookSpecExists</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a hook has already been defined<a class="mkapi-src-link" href="../source/simplug/#simplug.HookSpecExists" title="Source for simplug.HookSpecExists">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SyncImplOnAsyncSpecWarning">SyncImplOnAsyncSpecWarning</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a sync implementation on an async hook<a class="mkapi-src-link" href="../source/simplug/#simplug.SyncImplOnAsyncSpecWarning" title="Source for simplug.SyncImplOnAsyncSpecWarning">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.MultipleImplsForSingleResultHookWarning">MultipleImplsForSingleResultHookWarning</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When multiple implementations for a single-result hook<a class="mkapi-src-link" href="../source/simplug/#simplug.MultipleImplsForSingleResultHookWarning" title="Source for simplug.MultipleImplsForSingleResultHookWarning">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugResult">SimplugResult</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Way to get the results from the hooks<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugResult" title="Source for simplug.SimplugResult">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugWrapper">SimplugWrapper</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A wrapper for plugin<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper" title="Source for simplug.SimplugWrapper">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugHook">SimplugHook</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A hook of a plugin<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHook" title="Source for simplug.SimplugHook">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugHookAsync">SimplugHookAsync</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Wrapper of an async hook<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHookAsync" title="Source for simplug.SimplugHookAsync">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugHooks">SimplugHooks</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hooks manager<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHooks" title="Source for simplug.SimplugHooks">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.SimplugContext">SimplugContext</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The context manager for enabling or disabling a set of plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugContext" title="Source for simplug.SimplugContext">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="#simplug.Simplug">Simplug</a></code>
+<span class="mkapi-item-type">(simplug)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The plugin manager for simplug<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug" title="Source for simplug.Simplug">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="#simplug.makecall">makecall</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">call</code>, <code class="mkapi-object-signature">async_hook</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Make a call to an implementation and arguments<a class="mkapi-src-link" href="../source/simplug/#simplug.makecall" title="Source for simplug.makecall">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugImpl">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugimpl" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugImpl</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">impl</code>, <code class="mkapi-object-signature">has_self</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugImpl" title="Source for simplug.SimplugImpl">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">tuple</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A namedtuple wrapper for hook implementation.</p><p>This is used to mark the method/function to be an implementation of a hook.</p>
+</div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">impl</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hook implementation</span></li>
+
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugImplCall">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugimplcall" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugImplCall</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">plugin</code>, <code class="mkapi-object-signature">impl</code>, <code class="mkapi-object-signature">args</code>, <code class="mkapi-object-signature">kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugImplCall" title="Source for simplug.SimplugImplCall">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">tuple</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A namedtuple wrapper for hook implementation call.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">plugin</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of the plugin</span></li>
+
+<li><code class="mkapi-item-name">impl</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hook implementation</span></li>
+
+<li><code class="mkapi-item-name">args</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The positional arguments</span></li>
+
+<li><code class="mkapi-item-name">kwargs</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The keyword arguments</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugException">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugexception" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugException</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugException" title="Source for simplug.SimplugException">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Base exception class for simplug</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.NoSuchPlugin">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugnosuchplugin" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">NoSuchPlugin</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.NoSuchPlugin" title="Source for simplug.NoSuchPlugin">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a plugin cannot be imported</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.ResultUnavailableError">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugresultunavailableerror" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">ResultUnavailableError</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.ResultUnavailableError" title="Source for simplug.ResultUnavailableError">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a result is not available</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.PluginRegistered">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugpluginregistered" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">PluginRegistered</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.PluginRegistered" title="Source for simplug.PluginRegistered">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a plugin with a name already registered</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.NoPluginNameDefined">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugnopluginnamedefined" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">NoPluginNameDefined</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.NoPluginNameDefined" title="Source for simplug.NoPluginNameDefined">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When the name of the plugin cannot be found</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.HookSignatureDifferentFromSpec">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplughooksignaturedifferentfromspec" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">HookSignatureDifferentFromSpec</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.HookSignatureDifferentFromSpec" title="Source for simplug.HookSignatureDifferentFromSpec">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When the hook signature is different from spec</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.NoSuchHookSpec">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugnosuchhookspec" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">NoSuchHookSpec</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.NoSuchHookSpec" title="Source for simplug.NoSuchHookSpec">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When implemented a undefined hook or calling a non-exist hook</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.HookRequired">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplughookrequired" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">HookRequired</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.HookRequired" title="Source for simplug.HookRequired">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a required hook is not implemented</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.HookSpecExists">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplughookspecexists" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">HookSpecExists</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.HookSpecExists" title="Source for simplug.HookSpecExists">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugException">simplug.SimplugException</a></span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a hook has already been defined</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SyncImplOnAsyncSpecWarning">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsyncimplonasyncspecwarning" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SyncImplOnAsyncSpecWarning</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SyncImplOnAsyncSpecWarning" title="Source for simplug.SyncImplOnAsyncSpecWarning">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">Warning</span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When a sync implementation on an async hook</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.MultipleImplsForSingleResultHookWarning">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugmultipleimplsforsingleresulthookwarning" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">MultipleImplsForSingleResultHookWarning</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.MultipleImplsForSingleResultHookWarning" title="Source for simplug.MultipleImplsForSingleResultHookWarning">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">Warning</span>
+
+<span class="mkapi-base">Exception</span>
+
+<span class="mkapi-base">BaseException</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>When multiple implementations for a single-result hook</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugResult">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugresult" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugResult</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*values</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugResult" title="Source for simplug.SimplugResult">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">enum.Enum</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Way to get the results from the hooks</p><p>ALL - Execute all implementations for the hook
+AVAIL(S) - Get non-<code>None</code> results
+FIRST - Get the first result, ordered by priority
+    Don't excute the other the implementations
+LAST - Get the last result, ordered by priority
+    Don't excute the other the implementations
+ALL_FIRST - Get the first result from each implementation and
+    excute the other the implementations
+ALL_LAST - Get the last result from each implementation and
+    excute the other the implementations
+TRY - Return <code>None</code> instead of raising <code>ResultUnavailableError</code> when
+    no result is available
+SINGLE - Get the result from a single implementation</p>
+</div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="#enum.EnumType">EnumType</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Metaclass for Enum<a class="mkapi-src-link" href="../source/enum/#enum.EnumType" title="Source for enum.EnumType">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="classmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__contains__">__contains__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return True if <code>value</code> is in <code>cls</code>.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__contains__" title="Source for enum.EnumType.__contains__">&lt;/&gt;</a></span></li>
+
+<li class="classmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__getitem__">__getitem__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return the member matching <code>name</code>.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__getitem__" title="Source for enum.EnumType.__getitem__">&lt;/&gt;</a></span></li>
+
+<li class="classmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__iter__">__iter__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return members in definition order.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__iter__" title="Source for enum.EnumType.__iter__">&lt;/&gt;</a></span></li>
+
+<li class="classmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__len__">__len__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return the number of members (no aliases)<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__len__" title="Source for enum.EnumType.__len__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h4 id="enumenumtype" class="mkapi-object-body class top"><code class="mkapi-object-prefix">enum.</code><code class="mkapi-object-name">EnumType</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">bases</code>, <code class="mkapi-object-signature">classdict</code>, <code class="mkapi-object-signature">boundary=None</code>, <code class="mkapi-object-signature">_simple=False</code>, <code class="mkapi-object-signature">**kwds</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType" title="Source for enum.EnumType">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Metaclass for Enum</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li class="readonly-property"><code class="mkapi-item-name">__members__</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Returns a mapping of member name-&gt;value.<br>This mapping lists all enum members, including aliases. Note that this
+is a read-only view of the internal mapping.
+<span id="enum.EnumType.__members__"></span><a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__members__" title="Source for enum.EnumType.__members__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__bool__">__bool__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">classes/types should always be True.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__bool__" title="Source for enum.EnumType.__bool__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__call__">__call__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">value</code>, <code class="mkapi-object-signature">names</code>, <code class="mkapi-object-signature">*values</code>, <code class="mkapi-object-signature">module</code>, <code class="mkapi-object-signature">qualname</code>, <code class="mkapi-object-signature">type</code>, <code class="mkapi-object-signature">start</code>, <code class="mkapi-object-signature">boundary</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Either returns an existing member, or creates a new enum class.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__call__" title="Source for enum.EnumType.__call__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__contains__">__contains__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return True if <code>value</code> is in <code>cls</code>.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__contains__" title="Source for enum.EnumType.__contains__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__dir__">__dir__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Specialized <strong>dir</strong> implementation for types.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__dir__" title="Source for enum.EnumType.__dir__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__getitem__">__getitem__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return the member matching <code>name</code>.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__getitem__" title="Source for enum.EnumType.__getitem__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__iter__">__iter__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return members in definition order.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__iter__" title="Source for enum.EnumType.__iter__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__len__">__len__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return the number of members (no aliases)<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__len__" title="Source for enum.EnumType.__len__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__reversed__">__reversed__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return members in reverse definition order.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__reversed__" title="Source for enum.EnumType.__reversed__">&lt;/&gt;</a></span></li>
+
+<li class="staticmethod"><code class="mkapi-item-name"><a href="#enum.EnumType.__setattr__">__setattr__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">name</code>, <code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Block attempts to reassign Enum members.<a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__setattr__" title="Source for enum.EnumType.__setattr__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__bool__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__bool__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__bool__" title="Source for enum.EnumType.__bool__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>classes/types should always be True.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__call__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__call__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">value</code>, <code class="mkapi-object-signature">names=&lt;not given&gt;</code>, <code class="mkapi-object-signature">*values</code>, <code class="mkapi-object-signature">module=None</code>, <code class="mkapi-object-signature">qualname=None</code>, <code class="mkapi-object-signature">type=None</code>, <code class="mkapi-object-signature">start=1</code>, <code class="mkapi-object-signature">boundary=None</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__call__" title="Source for enum.EnumType.__call__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Either returns an existing member, or creates a new enum class.</p><p>This method is used both when an enum class is given a value to match
+to an enumeration member (i.e. Color(3)) and for the functional API
+(i.e. Color = Enum('Color', names='RED GREEN BLUE')).</p>
+<p>The value lookup branch is chosen if the enum is final.</p>
+<p>When used for the functional API:</p>
+<p><code>value</code> will be the name of the new class.</p>
+<p><code>names</code> should be either a string of white-space/comma delimited names
+(values will start at <code>start</code>), or an iterator/mapping of name, value pairs.</p>
+<p><code>module</code> should be set to the module this class is being created in;
+if it is not set, an attempt to find that module will be made, but if
+it fails the class will not be picklable.</p>
+<p><code>qualname</code> should be set to the actual location this class can be found
+at in its module; by default it is set to the global scope.  If this is
+not correct, unpickling will fail in some circumstances.</p>
+<p><code>type</code>, if set, will be mixed in as the first base class.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__contains__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__contains__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__contains__" title="Source for enum.EnumType.__contains__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return True if <code>value</code> is in <code>cls</code>.</p><p><code>value</code> is in <code>cls</code> if:
+1) <code>value</code> is a member of <code>cls</code>, or
+2) <code>value</code> is the value of one of the <code>cls</code>'s members.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__dir__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__dir__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__dir__" title="Source for enum.EnumType.__dir__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Specialized <strong>dir</strong> implementation for types.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__getitem__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__getitem__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__getitem__" title="Source for enum.EnumType.__getitem__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return the member matching <code>name</code>.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__iter__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__iter__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__iter__" title="Source for enum.EnumType.__iter__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return members in definition order.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__len__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__len__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__len__" title="Source for enum.EnumType.__len__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return the number of members (no aliases)</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__reversed__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__reversed__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__reversed__" title="Source for enum.EnumType.__reversed__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return members in reverse definition order.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__setattr__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object staticmethod code">
+    <div class="mkapi-object-kind staticmethod">staticmethod</div>
+    <div class="mkapi-object-body staticmethod"><code class="mkapi-object-name">__setattr__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">cls</code>, <code class="mkapi-object-signature">name</code>, <code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code></div>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__setattr__" title="Source for enum.EnumType.__setattr__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Block attempts to reassign Enum members.</p><p>A simple assignment to the class namespace only changes one of the
+several possible ways to get an Enum member from the Enum class,
+resulting in an inconsistent Enumeration.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__contains__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="enumenumtypecontains" class="mkapi-object-body classmethod"><code class="mkapi-object-name">__contains__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">value</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__contains__" title="Source for enum.EnumType.__contains__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return True if <code>value</code> is in <code>cls</code>.</p><p><code>value</code> is in <code>cls</code> if:
+1) <code>value</code> is a member of <code>cls</code>, or
+2) <code>value</code> is the value of one of the <code>cls</code>'s members.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__getitem__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="enumenumtypegetitem" class="mkapi-object-body classmethod"><code class="mkapi-object-name">__getitem__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__getitem__" title="Source for enum.EnumType.__getitem__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return the member matching <code>name</code>.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__iter__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="enumenumtypeiter" class="mkapi-object-body classmethod"><code class="mkapi-object-name">__iter__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__iter__" title="Source for enum.EnumType.__iter__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return members in definition order.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="enum.EnumType.__len__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object classmethod code">
+    <div class="mkapi-object-kind classmethod">classmethod</div>
+    <h4 id="enumenumtypelen" class="mkapi-object-body classmethod"><code class="mkapi-object-name">__len__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/enum/#enum.EnumType.__len__" title="Source for enum.EnumType.__len__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return the number of members (no aliases)</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.makecall">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h3 id="simplugmakecall" class="mkapi-object-body function top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">makecall</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">call</code>, <code class="mkapi-object-signature">async_hook=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.makecall" title="Source for simplug.makecall">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Make a call to an implementation and arguments</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">call</code>
+<span class="mkapi-item-type">(<a href="./#simplug.SimplugImplCall">SimplugImplCall</a>)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">3-element tuple of (implementation, args, kwargs)</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> 
+        </div>
+      <div class="mkapi-section-body returns"><p>The result of the call</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugWrapper">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugwrapper" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugWrapper</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">plugin</code>, <code class="mkapi-object-signature">batch_index</code>, <code class="mkapi-object-signature">index</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper" title="Source for simplug.SimplugWrapper">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A wrapper for plugin</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">plugin</code>
+<span class="mkapi-item-type">(Any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A object or a string indicating the plugin as a module</span></li>
+
+<li><code class="mkapi-item-name">batch_index</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The batch_index when the plugin is registered<br><blockquote>
+<blockquote>
+<blockquote>
+simplug = Simplug()
+simplug.register('plugin1', 'plugin2') # batch 0
+                # index:0,  index:1
+simplug.register('plugin3', 'plugin4') # batch 1
+                # index:0,  index:1<br>
+</blockquote>
+</blockquote>
+</blockquote>
+</span></li>
+
+<li><code class="mkapi-item-name">index</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The index when the plugin is registered</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+
+<li class="readonly-property"><code class="mkapi-item-name">name</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Try to get the name of the plugin.<br>A lowercase name is recommended.<br>
+if <code>&lt;plugin&gt;.name</code> is defined, then the name is used. Otherwise,
+<code>&lt;plugin&gt;.__name__</code> is used. Finally, <code>&lt;plugin&gt;.__class__.__name__</code> is
+tried.
+<span id="simplug.SimplugWrapper.name"></span><a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.name" title="Source for simplug.SimplugWrapper.name">&lt;/&gt;</a></span></li>
+
+<li><code class="mkapi-item-name">plugin</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The raw plugin object</span></li>
+
+<li><code class="mkapi-item-name">priority</code>
+<span class="mkapi-item-type">(Tuple)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A 2-element tuple used to prioritize the plugins<ul><li>- If <code>plugin.priority</code> is specified, use it as the first element<br />&nbsp;    and batch_index will be the second element</li><li>- Otherwise, batch_index the first and index the second.</li><li>- Smaller number has higher priority</li><li>- Negative numbers allowed</li></ul></span></li>
+
+<li class="readonly-property"><code class="mkapi-item-name">version</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Try to get the version of the plugin.<br>If the attribute <code>version</code> is definied, use it. Otherwise, try to check
+if <code>__version__</code> is defined. If neither is defined, return None.
+<span id="simplug.SimplugWrapper.version"></span><a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.version" title="Source for simplug.SimplugWrapper.version">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">NoSuchPlugin</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When a string is passed in and the plugin cannot beimported as a module
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugWrapper.disable">disable</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Disable this plugin<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.disable" title="Source for simplug.SimplugWrapper.disable">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugWrapper.enable">enable</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable this plugin<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.enable" title="Source for simplug.SimplugWrapper.enable">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugWrapper.hook">hook</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(simplug.simplugimpl | none)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the hook implementation of this plugin by name<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.hook" title="Source for simplug.SimplugWrapper.hook">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugWrapper.enable">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugwrapperenable" class="mkapi-object-body method"><code class="mkapi-object-name">enable</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.enable" title="Source for simplug.SimplugWrapper.enable">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Enable this plugin</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugWrapper.disable">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugwrapperdisable" class="mkapi-object-body method"><code class="mkapi-object-name">disable</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.disable" title="Source for simplug.SimplugWrapper.disable">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Disable this plugin</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugWrapper.hook">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugwrapperhook" class="mkapi-object-body method"><code class="mkapi-object-name">hook</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugWrapper.hook" title="Source for simplug.SimplugWrapper.hook">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the hook implementation of this plugin by name</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">name</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of the hook</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(simplug.simplugimpl | none)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The wrapper of the implementation. If the implementation is not    found or it's not decorated by <code>simplug.impl</code>, None will be
+    returned.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugHook">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplughook" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugHook</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">simplug_hooks</code>, <code class="mkapi-object-signature">spec</code>, <code class="mkapi-object-signature">required</code>, <code class="mkapi-object-signature">result</code>, <code class="mkapi-object-signature">warn_sync_impl_on_async=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHook" title="Source for simplug.SimplugHook">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A hook of a plugin</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">simplug_hooks</code>
+<span class="mkapi-item-type">(<a href="./#simplug.SimplugHooks">SimplugHooks</a>)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The SimplugHooks object</span></li>
+
+<li><code class="mkapi-item-name">spec</code>
+<span class="mkapi-item-type">(Callable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The specification of the hook</span></li>
+
+<li><code class="mkapi-item-name">required</code>
+<span class="mkapi-item-type">(bool)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether this hook is required to be implemented</span></li>
+
+<li><code class="mkapi-item-name">result</code>
+<span class="mkapi-item-type">(Union)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Way to collect the results from the hook</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">_has_self</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether the parameters have <code>self</code> as the first. If so,it will be ignored while being called.
+</span></li>
+
+<li><code class="mkapi-item-name">name</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of the hook</span></li>
+
+<li><code class="mkapi-item-name">required</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether this hook is required to be implemented</span></li>
+
+<li><code class="mkapi-item-name">result</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Way to collect the results from the hook</span></li>
+
+<li><code class="mkapi-item-name">simplug_hooks</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The SimplugHooks object</span></li>
+
+<li><code class="mkapi-item-name">spec</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The specification of the hook</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugHook.__call__">__call__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Depending on `self.result`)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Call the hook in your system<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHook.__call__" title="Source for simplug.SimplugHook.__call__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugHook.__call__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplughookcall" class="mkapi-object-body method"><code class="mkapi-object-name">__call__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHook.__call__" title="Source for simplug.SimplugHook.__call__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Call the hook in your system</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">*args</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">args for the hook</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">kwargs for the hook</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Depending on `self.result`)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ts
+,
+s
+e
+)
+m
+y</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugHookAsync">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplughookasync" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugHookAsync</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">simplug_hooks</code>, <code class="mkapi-object-signature">spec</code>, <code class="mkapi-object-signature">required</code>, <code class="mkapi-object-signature">result</code>, <code class="mkapi-object-signature">warn_sync_impl_on_async=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHookAsync" title="Source for simplug.SimplugHookAsync">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="./#simplug.SimplugHook">simplug.SimplugHook</a></span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Wrapper of an async hook</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">simplug_hooks</code>
+<span class="mkapi-item-type">(<a href="./#simplug.SimplugHooks">SimplugHooks</a>)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The SimplugHooks object</span></li>
+
+<li><code class="mkapi-item-name">spec</code>
+<span class="mkapi-item-type">(Callable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The specification of the hook</span></li>
+
+<li><code class="mkapi-item-name">required</code>
+<span class="mkapi-item-type">(bool)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether this hook is required to be implemented</span></li>
+
+<li><code class="mkapi-item-name">result</code>
+<span class="mkapi-item-type">(Union)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Way to collect the results from the hook</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">_has_self</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether the parameters have <code>self</code> as the first. If so,it will be ignored while being called.
+</span></li>
+
+<li><code class="mkapi-item-name">name</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of the hook</span></li>
+
+<li><code class="mkapi-item-name">required</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether this hook is required to be implemented</span></li>
+
+<li><code class="mkapi-item-name">result</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Way to collect the results from the hook</span></li>
+
+<li><code class="mkapi-item-name">simplug_hooks</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The SimplugHooks object</span></li>
+
+<li><code class="mkapi-item-name">spec</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The specification of the hook</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugHookAsync.__call__">__call__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Depending on `self.result`)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Call the hook in your system asynchronously<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHookAsync.__call__" title="Source for simplug.SimplugHookAsync.__call__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugHookAsync.__call__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplughookasynccall" class="mkapi-object-body method"><code class="mkapi-object-name">__call__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHookAsync.__call__" title="Source for simplug.SimplugHookAsync.__call__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Call the hook in your system asynchronously</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">*args</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">args for the hook</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">kwargs for the hook</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Depending on `self.result`)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ts
+,
+s
+e
+)
+m
+y</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugHooks">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplughooks" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugHooks</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHooks" title="Source for simplug.SimplugHooks">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>The hooks manager</p><p>Methods in this class are prefixed with a underscore to attributes clean
+for hooks.</p>
+<p>To call a hook in your system:
+~~~python</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>simplug.hooks.<hook_name>(<args>)
+~~~</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">_registry</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The plugin registry</span></li>
+
+<li><code class="mkapi-item-name">_registry_sorted</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether the plugin registry has been sorted already</span></li>
+
+<li><code class="mkapi-item-name">_specs</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The registry for the hook specs</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.SimplugHooks.__getattr__">__getattr__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(simplughook)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the hook by name<a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHooks.__getattr__" title="Source for simplug.SimplugHooks.__getattr__">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.SimplugHooks.__getattr__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplughooksgetattr" class="mkapi-object-body method"><code class="mkapi-object-name">__getattr__</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugHooks.__getattr__" title="Source for simplug.SimplugHooks.__getattr__">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the hook by name</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">name</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hook name</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(simplughook)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The SimplugHook object</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">NoSuchHookSpec</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When the hook has no specification defined.</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.SimplugContext">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplugcontext" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">SimplugContext</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">simplug</code>, <code class="mkapi-object-signature">plugins</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.SimplugContext" title="Source for simplug.SimplugContext">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>The context manager for enabling or disabling a set of plugins</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="simplug.Simplug">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h3 id="simplugsimplug" class="mkapi-object-body class top"><code class="mkapi-object-prefix"><a href="#simplug">simplug</a>.</code><code class="mkapi-object-name">Simplug</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">project</code><code class="mkapi-object-parenthesis">)</code><span class="mkapi-item-type"> &#x2192; simplug</span></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug" title="Source for simplug.Simplug">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>The plugin manager for simplug</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">PROJECTS</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The projects registry, to make sure the same <code>Simplug</code>object by the name project name.
+</span></li>
+
+<li><code class="mkapi-item-name">_batch_index</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The batch index for plugin registration</span></li>
+
+<li><code class="mkapi-item-name">_inited</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether <code>__init__</code> has already been called. Since the<code>__init__</code> method will be called after <code>__new__</code>, this is used to
+avoid <code>__init__</code> to be called more than once
+</span></li>
+
+<li><code class="mkapi-item-name">hooks</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hooks manager</span></li>
+
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.disable">disable</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*names</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Disable plugins by names<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.disable" title="Source for simplug.Simplug.disable">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.enable">enable</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*names</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Enable plugins by names<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.enable" title="Source for simplug.Simplug.enable">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.get_all_plugin_names">get_all_plugin_names</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(List)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the names of all plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_all_plugin_names" title="Source for simplug.Simplug.get_all_plugin_names">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.get_all_plugins">get_all_plugins</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">raw</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get a mapping of all plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_all_plugins" title="Source for simplug.Simplug.get_all_plugins">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.get_enabled_plugin_names">get_enabled_plugin_names</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(List)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the names of all enabled plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_enabled_plugin_names" title="Source for simplug.Simplug.get_enabled_plugin_names">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.get_enabled_plugins">get_enabled_plugins</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">raw</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get a mapping of all enabled plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_enabled_plugins" title="Source for simplug.Simplug.get_enabled_plugins">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.get_plugin">get_plugin</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code>, <code class="mkapi-object-signature">raw</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(object)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the plugin wrapper or the raw plugin object<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_plugin" title="Source for simplug.Simplug.get_plugin">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.impl">impl</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">hook</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A decorator for the implementation of a hook<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.impl" title="Source for simplug.Simplug.impl">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.load_entrypoints">load_entrypoints</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">group</code>, <code class="mkapi-object-signature">only</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Load plugins from setuptools entry_points<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.load_entrypoints" title="Source for simplug.Simplug.load_entrypoints">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.plugins_context">plugins_context</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">plugins</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(simplug.simplugcontext | contextlib.nullcontext)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A context manager with given plugins enabled or disabled<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.plugins_context" title="Source for simplug.Simplug.plugins_context">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.register">register</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*plugins</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Register plugins<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.register" title="Source for simplug.Simplug.register">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#simplug.Simplug.spec">spec</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">hook</code>, <code class="mkapi-object-signature">required</code>, <code class="mkapi-object-signature">result</code>, <code class="mkapi-object-signature">warn_sync_impl_on_async</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Callable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A decorator to define the specification of a hook<a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.spec" title="Source for simplug.Simplug.spec">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.load_entrypoints">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugload_entrypoints" class="mkapi-object-body method"><code class="mkapi-object-name">load_entrypoints</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">group=None</code>, <code class="mkapi-object-signature">only=()</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.load_entrypoints" title="Source for simplug.Simplug.load_entrypoints">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Load plugins from setuptools entry_points</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">group</code>
+<span class="mkapi-item-type">(str | none, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The group of the entry_points</span></li>
+
+<li><code class="mkapi-item-name">only</code>
+<span class="mkapi-item-type">(Union, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The names of the entry_points to load. If it's a str, itmeans only load this entry_point. If it's a list of str, it
+means load all the entry_points in the list.
+</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.register">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugregister" class="mkapi-object-body method"><code class="mkapi-object-name">register</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*plugins</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.register" title="Source for simplug.Simplug.register">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Register plugins</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">*plugins</code>
+<span class="mkapi-item-type">(Any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The plugins, each of which could be a str, indicatingthat the plugin is a module and will be imported by
+<code>__import__</code>; or an object with the hook implementations as
+its attributes.
+</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.get_plugin">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugget_plugin" class="mkapi-object-body method"><code class="mkapi-object-name">get_plugin</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">name</code>, <code class="mkapi-object-signature">raw=False</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_plugin" title="Source for simplug.Simplug.get_plugin">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the plugin wrapper or the raw plugin object</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">name</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The name of the plugin</span></li>
+
+<li><code class="mkapi-item-name">raw</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Get the raw plugin object (the one when it's registered)If a plugin is a module and registered by its name, the
+module is returned
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">NoSuchPlugin</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When the plugin does not exist</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(object)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The plugin wrapper or raw plugin</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.get_all_plugins">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugget_all_plugins" class="mkapi-object-body method"><code class="mkapi-object-name">get_all_plugins</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">raw=False</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_all_plugins" title="Source for simplug.Simplug.get_all_plugins">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get a mapping of all plugins</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">raw</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether return the raw plugin or not(the one when it's registered)
+If a plugin is registered as a module by its name, the module
+is returned.
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The mapping of all plugins</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.get_enabled_plugins">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugget_enabled_plugins" class="mkapi-object-body method"><code class="mkapi-object-name">get_enabled_plugins</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">raw=False</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_enabled_plugins" title="Source for simplug.Simplug.get_enabled_plugins">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get a mapping of all enabled plugins</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">raw</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether return the raw plugin or not(the one when it's registered)
+If a plugin is registered as a module by its name, the module
+is returned.
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The mapping of all enabled plugins</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.get_all_plugin_names">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugget_all_plugin_names" class="mkapi-object-body method"><code class="mkapi-object-name">get_all_plugin_names</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_all_plugin_names" title="Source for simplug.Simplug.get_all_plugin_names">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the names of all plugins</p></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(List)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The names of all plugins</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.get_enabled_plugin_names">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugget_enabled_plugin_names" class="mkapi-object-body method"><code class="mkapi-object-name">get_enabled_plugin_names</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.get_enabled_plugin_names" title="Source for simplug.Simplug.get_enabled_plugin_names">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Get the names of all enabled plugins</p></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(List)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The names of all enabled plugins</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.plugins_context">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugplugins_context" class="mkapi-object-body method"><code class="mkapi-object-name">plugins_context</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">plugins</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.plugins_context" title="Source for simplug.Simplug.plugins_context">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A context manager with given plugins enabled or disabled</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">plugins</code>
+<span class="mkapi-item-type">(Optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The plugin names or plugin objectsIf the given plugin does not exist, register it.
+None to not enable or disable anything.
+When the context exits, the original status of the plugins
+will be restored.
+You can use <code>+</code> or <code>-</code> to enable or disable a plugin. If a
+plugin is already enabled or disabled, it will be ignored.
+If a plugin name is given without a prefix, it will be
+enabled and all other plugins will be disabled. If a plugin
+is given as a plugin itself, not a name, it will be regarded as
+<code>+</code>.
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><p>~~~python</p><blockquote>
+<blockquote>
+<blockquote>
+<h2 id="enabled-plugin1-plugin2-disabled-plugin3">enabled: plugin1, plugin2; disabled: plugin3</h2>
+<p>with simplug.plugins_context(['plugin3']):
+    # enabled: plugin3; disabled: plugin1, plugin2
+    pass</p>
+<h2 id="enabled-plugin1-plugin2-disabled-plugin3_1">enabled: plugin1, plugin2; disabled: plugin3</h2>
+<p>with simplug.plugins_context(['+plugin3']):
+    # enabled: plugin1, plugin2, plugin3
+    pass</p>
+<h2 id="enabled-plugin1-plugin2-disabled-plugin3_2">enabled: plugin1, plugin2; disabled: plugin3</h2>
+<p>with simplug.plugins_context(['-plugin1']):
+    # enabled: plugin2; disabled: plugin1, plugin3
+    pass</p>
+<h2 id="enabled-plugin1-plugin2-disabled-plugin3_3">enabled: plugin1, plugin2; disabled: plugin3</h2>
+<p>with simplug.plugins_context(['-plugin1', '+plugin3']):
+    # enabled: plugin2, plugin3; disabled: plugin1
+    pass
+~~~</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(simplug.simplugcontext | contextlib.nullcontext)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The context manager</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.enable">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugenable" class="mkapi-object-body method"><code class="mkapi-object-name">enable</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*names</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.enable" title="Source for simplug.Simplug.enable">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Enable plugins by names</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">*names</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The names of the plugin</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.disable">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugdisable" class="mkapi-object-body method"><code class="mkapi-object-name">disable</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*names</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.disable" title="Source for simplug.Simplug.disable">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Disable plugins by names</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+
+<li><code class="mkapi-item-name">names</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The names of the plugin</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.spec">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugspec" class="mkapi-object-body method"><code class="mkapi-object-name">spec</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">hook=None</code>, <code class="mkapi-object-signature">required=False</code>, <code class="mkapi-object-signature">result=&lt;SimplugResult.ALL_AVAILS: 49&gt;</code>, <code class="mkapi-object-signature">warn_sync_impl_on_async=True</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.spec" title="Source for simplug.Simplug.spec">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A decorator to define the specification of a hook</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">hook</code>
+<span class="mkapi-item-type">(Optional, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hook spec. If it is None, that means this decorator iscalled with arguments, and it should be keyword arguments.
+Otherwise, it is called like this <code>simplug.spec</code>
+</span></li>
+
+<li><code class="mkapi-item-name">required</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether this hook is required to be implemented.</span></li>
+
+<li><code class="mkapi-item-name">result</code>
+<span class="mkapi-item-type">(Union, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">How should we collect the results from the plugins</span></li>
+
+<li><code class="mkapi-item-name">warn_sync_impl_on_async</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether to warn when a sync implementation</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">HookSpecExists</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If a hook spec with the same name (<code>hook.__name__</code>)is already defined.
+</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Callable)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>A decorator function of other argument is passed, or the hook spec    itself.</p>
+</div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="simplug.Simplug.impl">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h4 id="simplugsimplugimpl_1" class="mkapi-object-body method"><code class="mkapi-object-name">impl</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">hook</code><code class="mkapi-object-parenthesis">)</code></h4>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/simplug/#simplug.Simplug.impl" title="Source for simplug.Simplug.impl">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A decorator for the implementation of a hook</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">hook</code>
+<span class="mkapi-item-type">(Callable)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The hook implementation</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">NoSuchHookSpec</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When no specification is defined for this hook</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> 
+        </div>
+      <div class="mkapi-section-body returns"><p>The wrapped hook implementation by <code>SimplugImpl</code></p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../.." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.709b4209.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.29db7785.min.js"></script>
+      
+        <script src="../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>
