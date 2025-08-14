@@ -15,7 +15,7 @@ diot = "^0.3"
 [tool.poetry.build]
 generate-setup-file = true
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8"
 pytest-cov = "^5"
 setuptools = "^68"
@@ -38,3 +38,8 @@ filterwarnings = [
 [build-system]
 requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
