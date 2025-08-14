@@ -1264,10 +1264,18 @@ def test_result_errors():
         def hook(arg):
             ...
 
+        @simplug.spec
+        async def ahook(arg):
+            ...
+
     class Plugin1:
         @simplug.impl
         def hook(arg):
             return 1
+
+        @simplug.impl
+        async def ahook(arg):
+            return 1 / 0
 
     class Plugin2:
         name = "SomePlugin"
@@ -1276,9 +1284,19 @@ def test_result_errors():
         def hook(arg):
             return 1 / 0
 
-    simplug.register(Plugin1, Plugin2)
-    with pytest.raises(ResultError, match=r"SomePlugin\.hook"):
+        @simplug.impl
+        def ahook(arg):
+            return 1
+
+    with pytest.warns(SyncImplOnAsyncSpecWarning):
+        simplug.register(Plugin1, Plugin2)
+
+    with pytest.raises(ResultError, match=r"plugin=SomePlugin; spec=hook"):
         simplug.hooks.hook(1)
+
+    with pytest.raises(ResultError, match=r"plugin=plugin1; spec=\[async\]ahook"):
+        asyncio.run(simplug.hooks.ahook(1))
+
 
 def test_async_impl_on_sync_spec():
     simplug = Simplug("test_async_impl_on_sync_spec")

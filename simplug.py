@@ -140,23 +140,34 @@ def makecall(call: SimplugImplCall, async_hook: bool = False):
     Returns:
         The result of the call
     """
+    spec_prefix = "[async]" if async_hook else ""
+    err_msg = (
+        "Error while calling hook implementation, "
+        f"plugin={call.plugin}; spec={spec_prefix}{call.impl.__name__}"
+    )
+    if inspect.iscoroutinefunction(call.impl):
+
+        async def coro():
+            try:
+                return await call.impl(*call.args, **call.kwargs)
+            except Exception as exc:
+                raise ResultError(err_msg) from exc
+
+        return coro()
+
     try:
         out = call.impl(*call.args, **call.kwargs)
     except Exception as exc:
-        raise ResultError(
-            f"Error while calling {call.plugin}.{call.impl.__name__}(...)"
-        ) from exc
+        raise ResultError(err_msg) from exc
 
-    if not async_hook:
-        return out
+    if async_hook:
 
-    if inspect.iscoroutine(out):
-        return out
+        async def coro():
+            return out
 
-    async def coro():
-        return out
+        return coro()
 
-    return coro()
+    return out
 
 
 class SimplugWrapper:
