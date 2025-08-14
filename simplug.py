@@ -77,6 +77,10 @@ class HookSpecExists(SimplugException):
     """When a hook has already been defined"""
 
 
+class AsyncImplOnSyncSpecError(SimplugException):
+    """When an async implementation on a sync hook"""
+
+
 class SyncImplOnAsyncSpecWarning(Warning):
     """When a sync implementation on an async hook"""
 
@@ -665,6 +669,16 @@ class SimplugHooks:
                     f"Sync implementation on async hook "
                     f"{specname!r} in plugin {plugin.name}",
                     SyncImplOnAsyncSpecWarning,
+                )
+
+            if not isinstance(spec, SimplugHookAsync) and inspect.iscoroutinefunction(
+                hook.impl
+            ):
+                raise AsyncImplOnSyncSpecError(
+                    f"Sync hook {specname!r} should be implemented by "
+                    f"a sync function, async implementation "
+                    f"'{hook.impl.__name__}' "
+                    f"found for plugin '{plugin.name}'"
                 )
 
         self._registry[plugin.name] = plugin

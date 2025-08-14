@@ -20,6 +20,7 @@ from simplug import (
     PluginRegistered,
     SyncImplOnAsyncSpecWarning,
     MultipleImplsForSingleResultHookWarning,
+    AsyncImplOnSyncSpecError,
 )
 
 
@@ -1278,3 +1279,19 @@ def test_result_errors():
     simplug.register(Plugin1, Plugin2)
     with pytest.raises(ResultError, match=r"SomePlugin\.hook"):
         simplug.hooks.hook(1)
+
+def test_async_impl_on_sync_spec():
+    simplug = Simplug("test_async_impl_on_sync_spec")
+
+    class Specs:
+        @simplug.spec
+        def hook(arg):
+            ...
+
+    class Plugin:
+        @simplug.impl
+        async def hook(arg):
+            return arg + 1
+
+    with pytest.raises(AsyncImplOnSyncSpecError):
+        simplug.register(Plugin)
