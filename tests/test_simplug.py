@@ -11,6 +11,7 @@ from simplug import (
     SimplugWrapper,
     SimplugException,
     ResultUnavailableError,
+    ResultError,
     HookSpecExists,
     NoSuchHookSpec,
     NoSuchPlugin,
@@ -1252,3 +1253,28 @@ def test_context_non_only():
     assert simplug.get_enabled_plugin_names() == [
         f"plugin{i}" for i in range(4)
     ]
+
+
+def test_result_errors():
+    simplug = Simplug("test_errors")
+
+    class Specs:
+        @simplug.spec
+        def hook(arg):
+            ...
+
+    class Plugin1:
+        @simplug.impl
+        def hook(arg):
+            return 1
+
+    class Plugin2:
+        name = "SomePlugin"
+
+        @simplug.impl
+        def hook(arg):
+            return 1 / 0
+
+    simplug.register(Plugin1, Plugin2)
+    with pytest.raises(ResultError, match=r"SomePlugin\.hook"):
+        simplug.hooks.hook(1)

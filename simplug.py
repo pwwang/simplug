@@ -45,6 +45,10 @@ class NoSuchPlugin(SimplugException):
     """When a plugin cannot be imported"""
 
 
+class ResultError(SimplugException):
+    """When a result is not available or an error occurs while getting it"""
+
+
 class ResultUnavailableError(SimplugException):
     """When a result is not available"""
 
@@ -132,7 +136,13 @@ def makecall(call: SimplugImplCall, async_hook: bool = False):
     Returns:
         The result of the call
     """
-    out = call.impl(*call.args, **call.kwargs)
+    try:
+        out = call.impl(*call.args, **call.kwargs)
+    except Exception as exc:
+        raise ResultError(
+            f"Error while calling {call.plugin}.{call.impl.__name__}(...)"
+        ) from exc
+
     if not async_hook:
         return out
 
