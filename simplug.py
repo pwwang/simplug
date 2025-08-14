@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, Iterable, List, Tuple
 
 from diot import OrderedDiot
 
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 
 SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
 SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
