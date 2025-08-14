@@ -684,9 +684,17 @@ def test_result_last_avail_error(test_suite):
     def hook(arg):
         ...
 
+    @test_suite.add_impl("plugin1")
+    def hook(arg):
+        return None
+
     @test_suite.add_hook(SimplugResult.LAST_AVAIL)
     async def ahook(arg):
         ...
+
+    @test_suite.add_impl("plugin1")
+    async def ahook(arg):
+        return None
 
     with pytest.raises(ResultUnavailableError):
         test_suite.hook(1)
@@ -1313,3 +1321,664 @@ def test_async_impl_on_sync_spec():
 
     with pytest.raises(AsyncImplOnSyncSpecError):
         simplug.register(Plugin)
+
+
+def test_result_type_sync(capsys):
+    simplug = Simplug("test_result_type")
+
+    class Specs:
+        @simplug.spec(result=SimplugResult.ALL)
+        def hook1(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_AVAILS)
+        def hook2(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_FIRST)
+        def hook3(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_LAST)
+        def hook4(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_FIRST)
+        def hook5(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_LAST)
+        def hook6(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_FIRST_AVAIL)
+        def hook7(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_FIRST_AVAIL)
+        def hook8(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_LAST_AVAIL)
+        def hook9(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_LAST_AVAIL)
+        def hook10(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.FIRST)
+        def hook11(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.LAST)
+        def hook12(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_FIRST)
+        def hook13(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_LAST)
+        def hook14(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.FIRST_AVAIL)
+        def hook15(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.LAST_AVAIL)
+        def hook16(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_FIRST_AVAIL)
+        def hook17(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_LAST_AVAIL)
+        def hook18(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.SINGLE)
+        def hook19(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_SINGLE)
+        def hook20(arg):
+            ...
+
+        @simplug.spec(result=lambda calls: " ".join((makecall(call) for call in calls)))
+        def hook21(arg):
+            ...
+
+    # Enable debug messages for all hooks
+    for i in range(1, 22):
+        getattr(simplug.hooks, f"hook{i}").debug = True
+
+    class Plugin1:
+        name = "p1"
+
+        @simplug.impl
+        def hook1(arg):
+            return 1
+
+        @simplug.impl
+        def hook2(arg):
+            return None
+
+        @simplug.impl
+        def hook3(arg):
+            return 3
+
+        @simplug.impl
+        def hook4(arg):
+            return 40
+
+        @simplug.impl
+        def hook5(arg):
+            return 5
+
+        @simplug.impl
+        def hook6(arg):
+            return 60
+
+        @simplug.impl
+        def hook7(arg):
+            return None
+
+        @simplug.impl
+        def hook8(arg):
+            return None
+
+        @simplug.impl
+        def hook9(arg):
+            return 9
+
+        @simplug.impl
+        def hook10(arg):
+            return 10
+
+        @simplug.impl
+        def hook11(arg):
+            return 11
+
+        @simplug.impl
+        def hook12(arg):
+            return 120
+
+        @simplug.impl
+        def hook13(arg):
+            return 13
+
+        @simplug.impl
+        def hook14(arg):
+            return 140
+
+        @simplug.impl
+        def hook15(arg):
+            return None
+
+        @simplug.impl
+        def hook16(arg):
+            return 16
+
+        @simplug.impl
+        def hook17(arg):
+            return None
+
+        @simplug.impl
+        def hook18(arg):
+            return 18
+
+        @simplug.impl
+        def hook19(arg):
+            return 19
+
+        @simplug.impl
+        def hook20(arg):
+            return 200
+
+        @simplug.impl
+        def hook21(arg):
+            return "p1"
+
+    class Plugin2:
+        name = "p2"
+
+        @simplug.impl
+        def hook1(arg):
+            return 2
+
+        @simplug.impl
+        def hook2(arg):
+            return 2
+
+        @simplug.impl
+        def hook3(arg):
+            return 30
+
+        @simplug.impl
+        def hook4(arg):
+            return 4
+
+        @simplug.impl
+        def hook5(arg):
+            return 50
+
+        @simplug.impl
+        def hook6(arg):
+            return 6
+
+        @simplug.impl
+        def hook7(arg):
+            return 7
+
+        @simplug.impl
+        def hook8(arg):
+            return 8
+
+        @simplug.impl
+        def hook9(arg):
+            return None
+
+        @simplug.impl
+        def hook10(arg):
+            return None
+
+        @simplug.impl
+        def hook11(arg):
+            return 110
+
+        @simplug.impl
+        def hook12(arg):
+            return 12
+
+        @simplug.impl
+        def hook13(arg):
+            return 130
+
+        @simplug.impl
+        def hook14(arg):
+            return 14
+
+        @simplug.impl
+        def hook15(arg):
+            return 15
+
+        @simplug.impl
+        def hook16(arg):
+            return None
+
+        @simplug.impl
+        def hook17(arg):
+            return 17
+
+        @simplug.impl
+        def hook18(arg):
+            return None
+
+        @simplug.impl
+        def hook19(arg):
+            return 190
+
+        @simplug.impl
+        def hook20(arg):
+            return 20
+
+        @simplug.impl
+        def hook21(arg):
+            return "p2"
+
+    simplug.register(Plugin1, Plugin2)
+
+    r1 = simplug.hooks.hook1(0)
+    r2 = simplug.hooks.hook2(0)
+    r3 = simplug.hooks.hook3(0)
+    r4 = simplug.hooks.hook4(0)
+    r5 = simplug.hooks.hook5(0)
+    r6 = simplug.hooks.hook6(0)
+    r7 = simplug.hooks.hook7(0)
+    r8 = simplug.hooks.hook8(0)
+    r9 = simplug.hooks.hook9(0)
+    r10 = simplug.hooks.hook10(0)
+    r11 = simplug.hooks.hook11(0)
+    r12 = simplug.hooks.hook12(0)
+    r13 = simplug.hooks.hook13(0)
+    r14 = simplug.hooks.hook14(0)
+    r15 = simplug.hooks.hook15(0)
+    r16 = simplug.hooks.hook16(0)
+    r17 = simplug.hooks.hook17(0)
+    r18 = simplug.hooks.hook18(0)
+    r19 = simplug.hooks.hook19(0, __plugin="p1")
+    r21 = simplug.hooks.hook21(0)
+
+    with pytest.warns(MultipleImplsForSingleResultHookWarning):
+        r20 = simplug.hooks.hook20(0)
+
+    assert r1 == [1, 2]
+    assert r2 == [2]
+    assert r3 == 3
+    assert r4 == 4
+    assert r5 == 5
+    assert r6 == 6
+    assert r7 == 7
+    assert r8 == 8
+    assert r9 == 9
+    assert r10 == 10
+    assert r11 == 11
+    assert r12 == 12
+    assert r13 == 13
+    assert r14 == 14
+    assert r15 == 15
+    assert r16 == 16
+    assert r17 == 17
+    assert r18 == 18
+    assert r19 == 19
+    assert r20 == 20
+    assert r21 == "p1 p2"
+
+    out = capsys.readouterr().out
+    assert "[simplug] Calling hook hook1" in out
+    assert "[simplug] - Pushing call p1.hook1" in out
+    assert "[simplug] - Pushing call p2.hook1" in out
+    assert "[simplug] - Returning all results" in out
+    assert "Returning all available (non-None) results" in out
+    assert "Returning first result" in out
+    assert "Returning last result" in out
+    assert "Returning first available (non-None) result" in out
+    assert "Returning last available (non-None) result" in out
+    assert "Returning single result from plugin p1" in out
+    assert "Returning single result from the last plugin p2" in out
+    assert "Gathering results using custom function" in out
+
+
+def test_result_type_async(capsys):
+    simplug = Simplug("test_result_type_async")
+
+    async def custom_result(calls):
+        return " ".join([await makecall(call, True) for call in calls])
+
+    class Specs:
+        @simplug.spec(result=SimplugResult.ALL)
+        async def hook1(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_AVAILS)
+        async def hook2(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_FIRST)
+        async def hook3(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_LAST)
+        async def hook4(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_FIRST)
+        async def hook5(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_LAST)
+        async def hook6(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_FIRST_AVAIL)
+        async def hook7(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_FIRST_AVAIL)
+        async def hook8(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.ALL_LAST_AVAIL)
+        async def hook9(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_ALL_LAST_AVAIL)
+        async def hook10(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.FIRST)
+        async def hook11(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.LAST)
+        async def hook12(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_FIRST)
+        async def hook13(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_LAST)
+        async def hook14(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.FIRST_AVAIL)
+        async def hook15(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.LAST_AVAIL)
+        async def hook16(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_FIRST_AVAIL)
+        async def hook17(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_LAST_AVAIL)
+        async def hook18(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.SINGLE)
+        async def hook19(arg):
+            ...
+
+        @simplug.spec(result=SimplugResult.TRY_SINGLE)
+        async def hook20(arg):
+            ...
+
+        @simplug.spec(result=custom_result)
+        async def hook21(arg):
+            ...
+
+    # Enable debug messages for all hooks
+    for i in range(1, 22):
+        getattr(simplug.hooks, f"hook{i}").debug = True
+
+    class Plugin1:
+        name = "p1"
+
+        @simplug.impl
+        async def hook1(arg):
+            return 1
+
+        @simplug.impl
+        async def hook2(arg):
+            return None
+
+        @simplug.impl
+        async def hook3(arg):
+            return 3
+
+        @simplug.impl
+        async def hook4(arg):
+            return 40
+
+        @simplug.impl
+        async def hook5(arg):
+            return 5
+
+        @simplug.impl
+        async def hook6(arg):
+            return 60
+
+        @simplug.impl
+        async def hook7(arg):
+            return None
+
+        @simplug.impl
+        async def hook8(arg):
+            return None
+
+        @simplug.impl
+        async def hook9(arg):
+            return 9
+
+        @simplug.impl
+        async def hook10(arg):
+            return 10
+
+        @simplug.impl
+        async def hook11(arg):
+            return 11
+
+        @simplug.impl
+        async def hook12(arg):
+            return 120
+
+        @simplug.impl
+        async def hook13(arg):
+            return 13
+
+        @simplug.impl
+        async def hook14(arg):
+            return 140
+
+        @simplug.impl
+        async def hook15(arg):
+            return None
+
+        @simplug.impl
+        async def hook16(arg):
+            return 16
+
+        @simplug.impl
+        async def hook17(arg):
+            return None
+
+        @simplug.impl
+        async def hook18(arg):
+            return 18
+
+        @simplug.impl
+        async def hook19(arg):
+            return 19
+
+        @simplug.impl
+        async def hook20(arg):
+            return 200
+
+        @simplug.impl
+        async def hook21(arg):
+            return "p1"
+
+    class Plugin2:
+        name = "p2"
+
+        @simplug.impl
+        async def hook1(arg):
+            return 2
+
+        @simplug.impl
+        async def hook2(arg):
+            return 2
+
+        @simplug.impl
+        async def hook3(arg):
+            return 30
+
+        @simplug.impl
+        async def hook4(arg):
+            return 4
+
+        @simplug.impl
+        async def hook5(arg):
+            return 50
+
+        @simplug.impl
+        async def hook6(arg):
+            return 6
+
+        @simplug.impl
+        async def hook7(arg):
+            return 7
+
+        @simplug.impl
+        async def hook8(arg):
+            return 8
+
+        @simplug.impl
+        async def hook9(arg):
+            return None
+
+        @simplug.impl
+        async def hook10(arg):
+            return None
+
+        @simplug.impl
+        async def hook11(arg):
+            return 110
+
+        @simplug.impl
+        async def hook12(arg):
+            return 12
+
+        @simplug.impl
+        async def hook13(arg):
+            return 130
+
+        @simplug.impl
+        async def hook14(arg):
+            return 14
+
+        @simplug.impl
+        async def hook15(arg):
+            return 15
+
+        @simplug.impl
+        async def hook16(arg):
+            return None
+
+        @simplug.impl
+        async def hook17(arg):
+            return 17
+
+        @simplug.impl
+        async def hook18(arg):
+            return None
+
+        @simplug.impl
+        async def hook19(arg):
+            return 190
+
+        @simplug.impl
+        async def hook20(arg):
+            return 20
+
+        @simplug.impl
+        async def hook21(arg):
+            return "p2"
+
+    simplug.register(Plugin1, Plugin2)
+
+    r1 = asyncio.run(simplug.hooks.hook1(0))
+    r2 = asyncio.run(simplug.hooks.hook2(0))
+    r3 = asyncio.run(simplug.hooks.hook3(0))
+    r4 = asyncio.run(simplug.hooks.hook4(0))
+    r5 = asyncio.run(simplug.hooks.hook5(0))
+    r6 = asyncio.run(simplug.hooks.hook6(0))
+    r7 = asyncio.run(simplug.hooks.hook7(0))
+    r8 = asyncio.run(simplug.hooks.hook8(0))
+    r9 = asyncio.run(simplug.hooks.hook9(0))
+    r10 = asyncio.run(simplug.hooks.hook10(0))
+    r11 = asyncio.run(simplug.hooks.hook11(0))
+    r12 = asyncio.run(simplug.hooks.hook12(0))
+    r13 = asyncio.run(simplug.hooks.hook13(0))
+    r14 = asyncio.run(simplug.hooks.hook14(0))
+    r15 = asyncio.run(simplug.hooks.hook15(0))
+    r16 = asyncio.run(simplug.hooks.hook16(0))
+    r17 = asyncio.run(simplug.hooks.hook17(0))
+    r18 = asyncio.run(simplug.hooks.hook18(0))
+    r19 = asyncio.run(simplug.hooks.hook19(0, __plugin="p1"))
+    r21 = asyncio.run(simplug.hooks.hook21(0))
+
+    with pytest.warns(MultipleImplsForSingleResultHookWarning):
+        r20 = asyncio.run(simplug.hooks.hook20(0))
+
+    assert r1 == [1, 2]
+    assert r2 == [2]
+    assert r3 == 3
+    assert r4 == 4
+    assert r5 == 5
+    assert r6 == 6
+    assert r7 == 7
+    assert r8 == 8
+    assert r9 == 9
+    assert r10 == 10
+    assert r11 == 11
+    assert r12 == 12
+    assert r13 == 13
+    assert r14 == 14
+    assert r15 == 15
+    assert r16 == 16
+    assert r17 == 17
+    assert r18 == 18
+    assert r19 == 19
+    assert r20 == 20
+    assert r21 == "p1 p2"
+
+    out = capsys.readouterr().out
+    assert "[simplug] Calling async hook hook1" in out
+    assert "[simplug] - Pushing call p1.hook1" in out
+    assert "[simplug] - Pushing call p2.hook1" in out
+    assert "[simplug] - Returning all results" in out
+    assert "Returning all available (non-None) results" in out
+    assert "Returning first result" in out
+    assert "Returning last result" in out
+    assert "Returning first available (non-None) result" in out
+    assert "Returning last available (non-None) result" in out
+    assert "Returning single result from plugin p1" in out
+    assert "Returning single result from the last plugin p2" in out
+    assert "custom async function" in out

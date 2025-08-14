@@ -1,4 +1,5 @@
 """A simple entrypoint-free plugin system for python"""
+
 from __future__ import annotations
 
 import sys
@@ -338,6 +339,7 @@ class SimplugHook:
         self.name = spec.__name__
         self.required = required
         self.result = result
+        self.debug = False
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
 
     def _get_results(
@@ -350,6 +352,11 @@ class SimplugHook:
         result = self.result if result is None else result
 
         if callable(result):
+            if self.debug:
+                print(
+                    "[simplug] - Gathering results using "
+                    f"custom function {result.__name__}"
+                )
             return result(calls)
 
         if isinstance(result, SimplugResult):
@@ -366,44 +373,64 @@ class SimplugHook:
         if result & 0b010_0000:
             out = [makecall(call) for call in calls]
             if result == SimplugResult.ALL.value:
+                if self.debug:
+                    print("[simplug] - Returning all results")
                 return out
             if result == SimplugResult.ALL_AVAILS.value:
+                if self.debug:
+                    print("[simplug] - Returning all available (non-None) results")
                 return [x for x in out if x is not None]
             if result == SimplugResult.ALL_FIRST.value:
                 if not out:
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning first result")
                 return out[0]
             if result == SimplugResult.ALL_LAST.value:
                 if not out:
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning last result")
                 return out[-1]
             if result == SimplugResult.ALL_FIRST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning first available (non-None) result")
                 return next(x for x in out if x is not None)
             if result == SimplugResult.ALL_LAST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning last available (non-None) result")
                 return next(x for x in reversed(out) if x is not None)
 
         if result == SimplugResult.FIRST.value:
             if not calls:
                 raise ResultUnavailableError
+            if self.debug:
+                print("[simplug] - Returning first result")
             return makecall(calls[0])
         if result == SimplugResult.LAST.value:
             if not calls:
                 raise ResultUnavailableError
+            if self.debug:
+                print("[simplug] - Returning last result")
             return makecall(calls[-1])
         if result == SimplugResult.FIRST_AVAIL.value:
             for call in calls:
                 ret = makecall(call)
                 if ret is not None:
+                    if self.debug:
+                        print("[simplug] - Returning first available (non-None) result")
                     return ret
             raise ResultUnavailableError
         if result == SimplugResult.LAST_AVAIL.value:
             for call in reversed(calls):
                 ret = makecall(call)
                 if ret is not None:
+                    if self.debug:
+                        print("[simplug] - Returning last available (non-None) result")
                     return ret
             raise ResultUnavailableError
         if result == SimplugResult.SINGLE.value:
@@ -411,6 +438,10 @@ class SimplugHook:
                 raise ResultUnavailableError
             for call in calls:
                 if call.plugin == plugin:
+                    if self.debug:
+                        print(
+                            f"[simplug] - Returning single result from plugin {plugin}"
+                        )
                     return makecall(call)
             if plugin is not None:
                 raise ResultUnavailableError
@@ -419,6 +450,11 @@ class SimplugHook:
                     f"More than one implementation of {self.name} found, "
                     "but a single result is expected. Using the last one.",
                     MultipleImplsForSingleResultHookWarning,
+                )
+            if self.debug:
+                print(
+                    f"[simplug] - Returning single result from the last plugin "
+                    f"{calls[-1].plugin}"
                 )
             return makecall(calls[-1])
 
@@ -449,6 +485,12 @@ class SimplugHook:
                 "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
             )
 
+        if self.debug:
+            print(
+                f"[simplug] Calling hook {self.name} with args={args}, kwargs={kwargs}, "
+                f"result={self.result}"
+            )
+
         _plugin = kwargs.pop("__plugin", None)
         calls = []
         for plugin in self.simplug_hooks._registry.values():
@@ -458,6 +500,9 @@ class SimplugHook:
 
             if hook is not None:
                 plugin_args = (plugin.plugin, *args) if hook.has_self else args
+                if self.debug:
+                    print(f"[simplug] - Pushing call {plugin.name}.{self.name}")
+
                 calls.append(
                     SimplugImplCall(plugin.name, hook.impl, plugin_args, kwargs)
                 )
@@ -478,6 +523,11 @@ class SimplugHookAsync(SimplugHook):
         result = self.result if result is None else result
 
         if callable(result):
+            if self.debug:
+                print(
+                    "[simplug] - Gathering results using "
+                    f"custom async function {result.__name__}"
+                )
             return await result(calls)
 
         if isinstance(result, SimplugResult):
@@ -498,44 +548,66 @@ class SimplugHookAsync(SimplugHook):
         if result & 0b010_0000:
             out = [await makecall(call, True) for call in calls]
             if result == SimplugResult.ALL.value:
+                if self.debug:
+                    print("[simplug] - Returning all results")
                 return out
             if result == SimplugResult.ALL_AVAILS.value:
+                if self.debug:
+                    print("[simplug] - Returning all available (non-None) results")
                 return [x for x in out if x is not None]
             if result == SimplugResult.ALL_FIRST.value:
                 if not out:
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning first result")
                 return out[0]
             if result == SimplugResult.ALL_LAST.value:
                 if not out:
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning last result")
                 return out[-1]
             if result == SimplugResult.ALL_FIRST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning first available (non-None) result")
                 return next(x for x in out if x is not None)
             if result == SimplugResult.ALL_LAST_AVAIL.value:
                 if not out or all(x is None for x in out):
                     raise ResultUnavailableError
+                if self.debug:
+                    print("[simplug] - Returning last available (non-None) result")
                 return next(x for x in reversed(out) if x is not None)
 
         if result == SimplugResult.FIRST.value:
             if not calls:
                 raise ResultUnavailableError
+            if self.debug:
+                print("[simplug] - Returning first result")
             return await makecall(calls[0], True)
         if result == SimplugResult.LAST.value:
             if not calls:
                 raise ResultUnavailableError
+            if self.debug:
+                print("[simplug] - Returning last result")
             return await makecall(calls[-1], True)
         if result == SimplugResult.FIRST_AVAIL.value:
             for call in calls:
                 ret = await makecall(call, True)
                 if ret is not None:
+                    if self.debug:
+                        print(
+                            "[simplug] - Returning first available (non-None) result"
+                        )
                     return ret
             raise ResultUnavailableError
         if result == SimplugResult.LAST_AVAIL.value:
             for call in reversed(calls):
                 ret = await makecall(call, True)
                 if ret is not None:
+                    if self.debug:
+                        print("[simplug] - Returning last available (non-None) result")
                     return ret
             raise ResultUnavailableError
         if result == SimplugResult.SINGLE.value:
@@ -543,6 +615,10 @@ class SimplugHookAsync(SimplugHook):
                 raise ResultUnavailableError
             for call in calls:
                 if call.plugin == plugin:
+                    if self.debug:
+                        print(
+                            f"[simplug] - Returning single result from plugin {plugin}"
+                        )
                     return await makecall(call, True)
             if plugin is not None:
                 raise ResultUnavailableError
@@ -551,6 +627,11 @@ class SimplugHookAsync(SimplugHook):
                     f"More than one implementation of {self.name} found, "
                     "but no plugin was specified. Using the last one.",
                     MultipleImplsForSingleResultHookWarning,
+                )
+            if self.debug:
+                print(
+                    f"[simplug] - Returning single result from the last plugin "
+                    f"{calls[-1].plugin}"
                 )
             return await makecall(calls[-1], True)
 
@@ -581,6 +662,12 @@ class SimplugHookAsync(SimplugHook):
                 "Cannot use __plugin with non-SimplugResult.(TRY_)SINGLE hooks"
             )
 
+        if self.debug:
+            print(
+                f"[simplug] Calling async hook {self.name} with args={args}, "
+                f"kwargs={kwargs}, result={self.result}"
+            )
+
         _plugin = kwargs.pop("__plugin", None)
         calls = []
         for plugin in self.simplug_hooks._registry.values():
@@ -591,6 +678,8 @@ class SimplugHookAsync(SimplugHook):
                 continue
 
             plugin_args = (plugin.plugin, *args) if hook.has_self else args
+            if self.debug:
+                print(f"[simplug] - Pushing call {plugin.name}.{self.name}")
             calls.append(SimplugImplCall(plugin.name, hook.impl, plugin_args, kwargs))
 
         return await self._get_results(calls, plugin=_plugin)
