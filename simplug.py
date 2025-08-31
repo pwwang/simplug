@@ -13,7 +13,7 @@ from typing import Any, Callable, Dict, Iterable, List, Tuple, Union, Optional
 
 from diot import OrderedDiot
 
-__version__ = "0.5.3"
+__version__ = "0.5.4"
 
 
 class SimplugImpl:
