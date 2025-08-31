@@ -9,20 +9,64 @@ from collections import namedtuple
 from contextlib import nullcontext
 from enum import Enum
 from importlib import import_module, metadata
-from typing import Any, Callable, Dict, Iterable, List, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Tuple, Union, Optional
 
 from diot import OrderedDiot
 
 __version__ = "0.5.3"
 
-SimplugImpl = namedtuple("SimplugImpl", ["impl", "has_self"])
-SimplugImpl.__doc__ = """A namedtuple wrapper for hook implementation.
 
-This is used to mark the method/function to be an implementation of a hook.
+class SimplugImpl:
+    """A namedtuple wrapper for hook implementation.
 
-Args:
-    impl: The hook implementation
-"""
+    This is used to mark the method/function to be an implementation of a hook.
+
+    Args:
+        impl: The hook implementation
+        has_self: Whether the first argument is `self`
+    """
+
+    __slots__ = ("impl", "has_self")
+
+    def __init__(self, impl: Callable, has_self: bool):
+        self.impl = impl
+        self.has_self = has_self
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        return self.impl(*args, **kwds)
+
+    def __get__(self, obj: Any, objtype: type | None = None) -> "SimplugImpl":
+        """Descriptor protocol to make this work as a bound method when accessed
+        on an instance."""
+        if obj is None:
+            # When accessed on the class, return the SimplugImpl itself
+            return self
+        if self.has_self:
+            # Return a bound method-like callable that auto-passes the instance
+            # but still appears as a SimplugImpl
+            class BoundSimplugImpl(SimplugImpl):
+                def __init__(self, original_impl: "SimplugImpl", instance: Any) -> None:
+                    super().__init__(original_impl.impl, original_impl.has_self)
+                    self.instance = instance
+
+                def __call__(self, *args: Any, **kwargs: Any) -> Any:
+                    return self.impl(self.instance, *args, **kwargs)
+
+                def __get__(
+                    self, obj: Any, objtype: type | None = None
+                ) -> "SimplugImpl":  # pragma: no cover
+                    # Handle super() calls - when accessed on another instance
+                    if obj is None:
+                        return self
+                    # For super() calls, we want to call with the new instance
+                    # Create a new bound method for the new instance
+                    return BoundSimplugImpl(SimplugImpl(self.impl, self.has_self), obj)
+
+            return BoundSimplugImpl(self, obj)
+        else:
+            # For non-self methods, still return the original SimplugImpl
+            return self
+
 
 SimplugImplCall = namedtuple(
     "SimplugImplCall",
@@ -93,19 +137,20 @@ class MultipleImplsForSingleResultHookWarning(Warning):
 class SimplugResult(Enum):
     """Way to get the results from the hooks
 
-    ALL - Execute all implementations for the hook
-    AVAIL(S) - Get non-`None` results
-    FIRST - Get the first result, ordered by priority
-        Don't excute the other the implementations
-    LAST - Get the last result, ordered by priority
-        Don't excute the other the implementations
-    ALL_FIRST - Get the first result from each implementation and
-        excute the other the implementations
-    ALL_LAST - Get the last result from each implementation and
-        excute the other the implementations
-    TRY - Return `None` instead of raising `ResultUnavailableError` when
+    Available result types:
+    - ALL: Execute all implementations for the hook
+    - ALL_AVAILS: Get non-`None` results
+    - FIRST: Get the first result, ordered by priority
+        Don't execute the other implementations
+    - LAST: Get the last result, ordered by priority
+        Don't execute the other implementations
+    - ALL_FIRST: Get the first result from each implementation and
+        execute the other implementations
+    - ALL_LAST: Get the last result from each implementation and
+        execute the other implementations
+    - TRY_*: Return `None` instead of raising `ResultUnavailableError` when
         no result is available
-    SINGLE - Get the result from a single implementation
+    - SINGLE: Get the result from a single implementation
     """
 
     # 0b  1    1    1    1111
@@ -132,11 +177,12 @@ class SimplugResult(Enum):
     TRY_SINGLE = 0b100_1010  # 146
 
 
-def makecall(call: SimplugImplCall, async_hook: bool = False):
+def makecall(call: SimplugImplCall, async_hook: bool = False) -> Any:
     """Make a call to an implementation and arguments
 
     Args:
         call: 3-element tuple of (implementation, args, kwargs)
+        async_hook: Whether this is being called from an async hook
 
     Returns:
         The result of the call
@@ -198,7 +244,12 @@ class SimplugWrapper:
             imported as a module
     """
 
-    def __init__(self, plugin: Any, batch_index: int, index: int):
+    plugin: Any
+    _name: Optional[str]
+    priority: Tuple[int, int]
+    enabled: bool
+
+    def __init__(self, plugin: Any, batch_index: int, index: int) -> None:
         self.plugin = self._name = None
         if isinstance(plugin, str):
             try:
@@ -222,7 +273,7 @@ class SimplugWrapper:
         self.enabled = True  # type: bool
 
     @property
-    def version(self) -> str | None:
+    def version(self) -> Optional[str]:
         """Try to get the version of the plugin.
 
         If the attribute `version` is definied, use it. Otherwise, try to check
@@ -278,11 +329,11 @@ class SimplugWrapper:
         """Enable this plugin"""
         self.enabled = True
 
-    def disable(self):
+    def disable(self) -> None:
         """Disable this plugin"""
         self.enabled = False
 
-    def hook(self, name: str) -> SimplugImpl | None:
+    def hook(self, name: str) -> Optional[SimplugImpl]:
         """Get the hook implementation of this plugin by name
 
         Args:
@@ -322,18 +373,27 @@ class SimplugHook:
         spec: The specification of the hook
         required: Whether this hook is required to be implemented
         result: Way to collect the results from the hook
-        _has_self: Whether the parameters have `self` as the first. If so,
-            it will be ignored while being called.
+        debug: Whether to print debug messages
+        warn_sync_impl_on_async: Whether to warn about sync implementations
+            on async hooks
     """
+
+    simplug_hooks: "SimplugHooks"
+    spec: Callable[..., Any]
+    name: str
+    required: bool
+    result: Union[SimplugResult, Callable]
+    debug: bool
+    warn_sync_impl_on_async: bool
 
     def __init__(
         self,
-        simplug_hooks: SimplugHooks,
-        spec: Callable,
+        simplug_hooks: "SimplugHooks",
+        spec: Callable[..., Any],
         required: bool,
-        result: SimplugResult | Callable,
+        result: Union[SimplugResult, Callable],
         warn_sync_impl_on_async: bool = False,
-    ):
+    ) -> None:
         self.simplug_hooks = simplug_hooks
         self.spec = spec
         self.name = spec.__name__
@@ -342,11 +402,49 @@ class SimplugHook:
         self.debug = False
         self.warn_sync_impl_on_async = warn_sync_impl_on_async
 
+    def _prepare_plugin_args(
+        self, plugin: SimplugWrapper, hook: SimplugImpl, args: Tuple[Any, ...]
+    ) -> Tuple[Any, ...]:
+        """Prepare arguments for calling a plugin hook implementation.
+
+        Args:
+            plugin: The plugin wrapper
+            hook: The hook implementation (SimplugImpl)
+            args: The original arguments to the hook
+
+        Returns:
+            Tuple of prepared arguments for the hook implementation
+        """
+        if not hook.has_self:
+            return args
+
+        self_obj = plugin.plugin
+        if inspect.isclass(self_obj):
+            # Try to instantiate the class if it has no required parameters
+            try:
+                sig = inspect.signature(self_obj)
+                required_params = [
+                    p for p in sig.parameters.values()
+                    if (p.kind in (
+                        inspect.Parameter.POSITIONAL_ONLY,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    ) and p.default is inspect.Parameter.empty
+                      and p.name != "self")
+                ]
+                if not required_params:
+                    self_obj = self_obj()
+            except (TypeError, ValueError):  # pragma: no cover
+                # More specific exception handling
+                # Fallback to passing the class if instantiation fails
+                pass
+
+        return (self_obj, *args)
+
     def _get_results(
         self,
         calls: List[SimplugImplCall],
-        plugin: str,
-        result: SimplugResult | Callable | int = None,
+        plugin: Optional[str],
+        result: Optional[Union[SimplugResult, Callable, int]] = None,
     ) -> Any:
         """Get the results according to self.result"""
         result = self.result if result is None else result
@@ -458,7 +556,7 @@ class SimplugHook:
                 )
             return makecall(calls[-1])
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Call the hook in your system
 
         Args:
@@ -499,7 +597,7 @@ class SimplugHook:
             hook = plugin.hook(self.name)
 
             if hook is not None:
-                plugin_args = (plugin.plugin, *args) if hook.has_self else args
+                plugin_args = self._prepare_plugin_args(plugin, hook, args)
                 if self.debug:
                     print(f"[simplug] - Pushing call {plugin.name}.{self.name}")
 
@@ -516,8 +614,8 @@ class SimplugHookAsync(SimplugHook):
     async def _get_results(
         self,
         calls: List[SimplugImplCall],
-        plugin: str,
-        result: SimplugResult | Callable | int = None,
+        plugin: Optional[str],
+        result: Optional[Union[SimplugResult, Callable, int]] = None,
     ) -> Any:
         """Get the results according to self.result"""
         result = self.result if result is None else result
@@ -635,7 +733,7 @@ class SimplugHookAsync(SimplugHook):
                 )
             return await makecall(calls[-1], True)
 
-    async def __call__(self, *args, **kwargs):
+    async def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Call the hook in your system asynchronously
 
         Args:
@@ -677,7 +775,7 @@ class SimplugHookAsync(SimplugHook):
             if hook is None:  # pragma: no cover
                 continue
 
-            plugin_args = (plugin.plugin, *args) if hook.has_self else args
+            plugin_args = self._prepare_plugin_args(plugin, hook, args)
             if self.debug:
                 print(f"[simplug] - Pushing call {plugin.name}.{self.name}")
             calls.append(SimplugImplCall(plugin.name, hook.impl, plugin_args, kwargs))
@@ -700,10 +798,14 @@ class SimplugHooks:
         _registry_sorted: Whether the plugin registry has been sorted already
     """
 
-    def __init__(self):
+    _registry: OrderedDiot
+    _specs: Dict[str, Union["SimplugHook", "SimplugHookAsync"]]
+    _registry_sorted: bool
+
+    def __init__(self) -> None:
 
         self._registry = OrderedDiot()
-        self._specs = {}
+        self._specs: Dict[str, Union[SimplugHook, SimplugHookAsync]] = {}
         self._registry_sorted = False
 
     def _register(self, plugin: SimplugWrapper) -> None:
@@ -780,7 +882,7 @@ class SimplugHooks:
         )
         self._registry_sorted = True
 
-    def __getattr__(self, name: str) -> "SimplugHook":
+    def __getattr__(self, name: str) -> Union["SimplugHook", "SimplugHookAsync"]:
         """Get the hook by name
 
         Args:
@@ -801,7 +903,13 @@ class SimplugHooks:
 class SimplugContext:
     """The context manager for enabling or disabling a set of plugins"""
 
-    def __init__(self, simplug: "Simplug", plugins: Iterable[Any]):
+    only: bool
+    plugins: Iterable[Any]
+    simplug: "Simplug"
+    orig_registry: OrderedDiot
+    orig_status: Dict[str, bool]
+
+    def __init__(self, simplug: "Simplug", plugins: Iterable[Any]) -> None:
         self.only = self._check_plugins(plugins)
         self.plugins = plugins
         self.simplug = simplug
@@ -825,12 +933,12 @@ class SimplugContext:
             )
         return False
 
-    def _raise(self, exc: Exception):
+    def _raise(self, exc: Exception) -> None:
         """Raise the exception and restore the original status"""
         self.__exit__(*sys.exc_info())
         raise exc
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         if self.only:
             for plugin in self.orig_registry.values():
                 plugin.disable()
@@ -856,7 +964,7 @@ class SimplugContext:
                     self._raise(NoSuchPlugin(plugin))
                 self.orig_registry[plugin].enable()
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.simplug.hooks._registry = self.orig_registry
         for name, status in self.orig_status.items():
             self.simplug.hooks._registry[name].enabled = status
@@ -878,6 +986,11 @@ class Simplug:
 
     PROJECTS: Dict[str, "Simplug"] = {}
 
+    _batch_index: int
+    hooks: SimplugHooks
+    project: str
+    _inited: bool
+
     def __new__(cls, project: str) -> "Simplug":
         if project not in cls.PROJECTS:
             obj = super().__new__(cls)
@@ -886,7 +999,7 @@ class Simplug:
 
         return cls.PROJECTS[project]
 
-    def __init__(self, project: str):
+    def __init__(self, project: str) -> None:
         if getattr(self, "_inited", None):
             return
         self._batch_index = 0
@@ -896,8 +1009,8 @@ class Simplug:
 
     def load_entrypoints(
         self,
-        group: str | None = None,
-        only: str | Iterable[str] = (),
+        group: Optional[str] = None,
+        only: Union[str, Iterable[str]] = (),
     ) -> None:
         """Load plugins from setuptools entry_points
 
@@ -943,7 +1056,7 @@ class Simplug:
             # allow to use as a decorator
             return plugins[0]
 
-    def get_plugin(self, name: str, raw: bool = False) -> object:
+    def get_plugin(self, name: str, raw: bool = False) -> Union[SimplugWrapper, Any]:
         """Get the plugin wrapper or the raw plugin object
 
         Args:
@@ -963,7 +1076,7 @@ class Simplug:
         wrapper = self.hooks._registry[name]
         return wrapper.plugin if raw else wrapper
 
-    def get_all_plugins(self, raw: bool = False) -> Dict[str, SimplugWrapper]:
+    def get_all_plugins(self, raw: bool = False) -> Dict[str, Any]:
         """Get a mapping of all plugins
 
         Args:
@@ -981,7 +1094,7 @@ class Simplug:
             [(name, plugin.plugin) for name, plugin in self.hooks._registry.items()]
         )
 
-    def get_enabled_plugins(self, raw: bool = False) -> Dict[str, SimplugWrapper]:
+    def get_enabled_plugins(self, raw: bool = False) -> Dict[str, Any]:
         """Get a mapping of all enabled plugins
 
         Args:
@@ -1018,8 +1131,8 @@ class Simplug:
         return [name for name, plugin in self.hooks._registry.items() if plugin.enabled]
 
     def plugins_context(
-        self, plugins: Iterable[Any] | None
-    ) -> SimplugContext | nullcontext:
+        self, plugins: Optional[Iterable[Any]]
+    ) -> Union[SimplugContext, nullcontext]:
         """A context manager with given plugins enabled or disabled
 
         Args:
@@ -1080,11 +1193,11 @@ class Simplug:
 
     def spec(
         self,
-        hook: Callable | None = None,
+        hook: Optional[Callable[..., Any]] = None,
         required: bool = False,
-        result: SimplugResult | Callable = SimplugResult.ALL_AVAILS,
+        result: Union[SimplugResult, Callable] = SimplugResult.ALL_AVAILS,
         warn_sync_impl_on_async: bool = True,
-    ) -> Callable:
+    ) -> Callable[..., Any]:
         """A decorator to define the specification of a hook
 
         Args:
@@ -1133,7 +1246,7 @@ class Simplug:
 
         return hook
 
-    def impl(self, hook: Callable):
+    def impl(self, hook: Callable[..., Any]) -> SimplugImpl:
         """A decorator for the implementation of a hook
 
         Args:

@@ -1982,3 +1982,55 @@ def test_result_type_async(capsys):
     assert "Returning single result from plugin p1" in out
     assert "Returning single result from the last plugin p2" in out
     assert "custom async function" in out
+
+
+def test_hooks_can_be_inherited_in_subclasses():
+    simplug = Simplug("test_inherited_hooks")
+
+    class Specs:
+        @simplug.spec
+        def hook1(arg):
+            ...
+
+        @simplug.spec
+        def hook2(arg):
+            ...
+
+    class PluginBase:
+        @simplug.impl
+        def hook1(self, arg):
+            return arg + 1
+
+        @simplug.impl
+        def hook2(arg):
+            return arg + 2
+
+    pb = PluginBase()
+    assert pb.hook1(1) == 2  # Now works without explicit self
+    assert pb.hook2(1) == 3
+    assert PluginBase.hook2(1) == 3
+
+    simplug.register(PluginBase)
+    assert simplug.hooks.hook1(1) == [2]
+    assert simplug.hooks.hook2(1) == [3]
+
+    class PluginChild(PluginBase):
+
+        def __init__(self, name="pluginchild"):
+            self.name = name
+            self.x = 1
+
+        @simplug.impl
+        def hook1(self, arg):
+            return super().hook1(arg) * 2 + self.x
+
+    pc = PluginChild()
+    assert pc.hook1(1) == 5  # Also works without explicit self
+
+    simplug.register(PluginChild)
+    assert simplug.hooks.hook1(1) == [2, 5]
+    assert simplug.hooks.hook2(1) == [3, 3]
+
+    simplug.register(PluginChild(name="pluginchild2"))
+    assert simplug.hooks.hook1(1) == [2, 5, 5]
+    assert simplug.hooks.hook2(1) == [3, 3, 3]
