@@ -2001,6 +2001,8 @@ def test_hooks_can_be_inherited_in_subclasses():
             ...
 
     class PluginBase:
+        instantiate = True
+
         @simplug.impl
         def hook1(self, arg):
             return arg + 1
@@ -2014,12 +2016,12 @@ def test_hooks_can_be_inherited_in_subclasses():
     assert pb.hook2(1) == 3
     assert PluginBase.hook2(1) == 3
 
-    with pytest.warns(ImplMightNeedInstanceWarning):
-        simplug.register(PluginBase)
+    simplug.register(PluginBase)
     assert simplug.hooks.hook1(1) == [2]
     assert simplug.hooks.hook2(1) == [3]
 
     class PluginChild(PluginBase):
+        instantiate = False
 
         def __init__(self, name="pluginchild"):
             self.name = name

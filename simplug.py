@@ -274,6 +274,10 @@ class SimplugWrapper:
             (batch_index, index) if priority is None else (priority, batch_index)
         )
 
+        instantiate = getattr(self.plugin, "instantiate", False)
+        if instantiate and inspect.isclass(self.plugin):
+            self.plugin = self.plugin()
+
         self.enabled = True  # type: bool
 
     @property
