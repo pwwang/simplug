@@ -20,6 +20,7 @@ from simplug import (
     PluginRegistered,
     SyncImplOnAsyncSpecWarning,
     MultipleImplsForSingleResultHookWarning,
+    ImplMightNeedInstanceWarning,
     AsyncImplOnSyncSpecError,
 )
 
@@ -35,12 +36,15 @@ def test_suite(request):
                 simplug.spec(func, result=result, required=required)
             return decorator
 
-        def add_impl(self, plugin_name):
+        def add_impl(self, plugin_name, register_instance=False):
             def decorator(func):
                 if plugin_name not in plugins:
                     class Plugin:
                         name = plugin_name
-                    plugins[plugin_name] = Plugin
+                    if register_instance:
+                        plugins[plugin_name] = Plugin()
+                    else:
+                        plugins[plugin_name] = Plugin
 
                 setattr(plugins[plugin_name], func.__name__, simplug.impl(func))
             return decorator
@@ -1040,7 +1044,7 @@ def test_impl_self(test_suite):
     def hook(arg):
         ...
 
-    @test_suite.add_impl("plugin0")
+    @test_suite.add_impl("plugin0", register_instance=True)
     def hook(self, arg):
         return arg + 1
 
@@ -2010,7 +2014,8 @@ def test_hooks_can_be_inherited_in_subclasses():
     assert pb.hook2(1) == 3
     assert PluginBase.hook2(1) == 3
 
-    simplug.register(PluginBase)
+    with pytest.warns(ImplMightNeedInstanceWarning):
+        simplug.register(PluginBase)
     assert simplug.hooks.hook1(1) == [2]
     assert simplug.hooks.hook2(1) == [3]
 
@@ -2027,10 +2032,38 @@ def test_hooks_can_be_inherited_in_subclasses():
     pc = PluginChild()
     assert pc.hook1(1) == 5  # Also works without explicit self
 
-    simplug.register(PluginChild)
+    with pytest.warns(ImplMightNeedInstanceWarning):
+        simplug.register(PluginChild)
     assert simplug.hooks.hook1(1) == [2, 5]
     assert simplug.hooks.hook2(1) == [3, 3]
 
     simplug.register(PluginChild(name="pluginchild2"))
     assert simplug.hooks.hook1(1) == [2, 5, 5]
     assert simplug.hooks.hook2(1) == [3, 3, 3]
+
+
+def test_warn_about_using_self_but_class_rather_than_instance_as_plugin():
+    simplug = Simplug("test_warn_self_but_class")
+
+    class Specs:
+        @simplug.spec
+        def myhook(arg):
+            ...
+
+    class Plugin:
+
+        def __init__(self, name):
+            self.name = name
+
+        @simplug.impl
+        def myhook(self, arg):
+            return arg + 1
+
+    with pytest.warns(ImplMightNeedInstanceWarning):
+        simplug.register(Plugin)
+
+    assert simplug.hooks.myhook(1) == [2]
+
+    # no warning with instance
+    simplug.register(Plugin("plugin2"))
+    assert simplug.hooks.myhook(1) == [2, 2]

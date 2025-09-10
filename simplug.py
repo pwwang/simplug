@@ -134,6 +134,10 @@ class MultipleImplsForSingleResultHookWarning(Warning):
     """When multiple implementations for a single-result hook"""
 
 
+class ImplMightNeedInstanceWarning(Warning):
+    """When an implementation might need an instance (self) but not defined as such"""
+
+
 class SimplugResult(Enum):
     """Way to get the results from the hooks
 
@@ -325,6 +329,15 @@ class SimplugWrapper:
 
         raise NoPluginNameDefined(str(self.plugin))  # pragma: no cover
 
+    @property
+    def is_class(self) -> bool:
+        """Whether the plugin is a class
+
+        Returns:
+            True if the plugin is a class, False otherwise
+        """
+        return inspect.isclass(self.plugin)
+
     def enable(self) -> None:
         """Enable this plugin"""
         self.enabled = True
@@ -347,6 +360,7 @@ class SimplugWrapper:
         ret = getattr(self.plugin, name, None)
         if not isinstance(ret, SimplugImpl):
             return None
+
         return ret
 
     def __eq__(self, other: Any) -> bool:
@@ -825,6 +839,7 @@ class SimplugHooks:
             )
         # check if required hooks implemented
         # and signature
+        has_self_warned: bool = False
         for specname, spec in self._specs.items():
             hook = plugin.hook(specname)
             if spec.required and hook is None:
@@ -869,6 +884,16 @@ class SimplugHooks:
                     f"'{hook.impl.__name__}' "
                     f"found for plugin '{plugin.name}'"
                 )
+
+            if hook.has_self and plugin.is_class and not has_self_warned:
+                warnings.warn(
+                    f"The implementation '{hook.impl.__name__}' of hook "
+                    f"'{specname}' in plugin '{plugin.name}' might need an "
+                    "instance (self), but the plugin is a class. "
+                    "Please register your plugin as an instance of the class.",
+                    ImplMightNeedInstanceWarning,
+                )
+                has_self_warned = True
 
         self._registry[plugin.name] = plugin
 
