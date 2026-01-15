@@ -1,18 +1,73 @@
 site_name: simplug
-theme:
-    name: 'material'
-markdown_extensions:
-    - markdown.extensions.admonition
-    - pymdownx.superfences:
-        preserve_tabs: true
-    - toc:
-        baselevel: 2
-plugins:
-    - search # necessary for search to work
-    - mkapi
-extra_css:
-    - style.css
+site_description: A simple plugin system for Python with async hooks supported
+site_author: pwwang
+site_url: https://pwwang.github.io/simplug/
+repo_url: https://github.com/pwwang/simplug
+repo_name: pwwang/simplug
+
 nav:
-    - '': mkapi/api/simplug
-    - 'Home': 'index.md'
-    - 'API': api/simplug.md
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Guides:
+      - Defining Hooks: guide/defining-hooks.md
+      - Implementing Hooks: guide/implementing-hooks.md
+      - Result Collection: guide/result-collection.md
+      - Plugin Registry: guide/plugin-registry.md
+      - Priority System: guide/priority-system.md
+      - Async Hooks: guide/async-hooks.md
+      - Setuptools Entrypoints: guide/entrypoints.md
+  - API Reference: mkapi/api/simplug
+  - Examples: examples.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkapi
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pwwang/simplug
+      name: GitHub
