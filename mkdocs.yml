@@ -1,23 +1,9 @@
 site_name: simplug
 site_description: A simple plugin system for Python with async hooks supported
 site_author: pwwang
-site_url: https://pwwang.github.io/simplug/
+# site_url: https://pwwang.github.io/simplug/
 repo_url: https://github.com/pwwang/simplug
 repo_name: pwwang/simplug
-
-nav:
-  - Home: index.md
-  - Getting Started: getting-started.md
-  - Guides:
-      - Defining Hooks: guide/defining-hooks.md
-      - Implementing Hooks: guide/implementing-hooks.md
-      - Result Collection: guide/result-collection.md
-      - Plugin Registry: guide/plugin-registry.md
-      - Priority System: guide/priority-system.md
-      - Async Hooks: guide/async-hooks.md
-      - Setuptools Entrypoints: guide/entrypoints.md
-  - API Reference: mkapi/api/simplug
-  - Examples: examples.md
 
 theme:
   name: material
@@ -66,8 +52,26 @@ markdown_extensions:
   - toc:
       permalink: true
 
+extra_css:
+  - style.css
+
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/pwwang/simplug
       name: GitHub
+
+nav:
+  - '': mkapi/api/simplug
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Guides:
+      - Defining Hooks: guide/defining-hooks.md
+      - Implementing Hooks: guide/implementing-hooks.md
+      - Result Collection: guide/result-collection.md
+      - Plugin Registry: guide/plugin-registry.md
+      - Priority System: guide/priority-system.md
+      - Async Hooks: guide/async-hooks.md
+      - Setuptools Entrypoints: guide/entrypoints.md
+  - API Reference: api/simplug.md
+  - Examples: examples.md

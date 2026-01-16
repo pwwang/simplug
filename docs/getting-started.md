@@ -144,4 +144,4 @@ print(enriched)  # [{'title': 'Write documentation', 'priority': 'medium'}, {'ti
 - **[Defining Hooks](guide/defining-hooks.md)** - Learn about hook options and specifications
 - **[Implementing Hooks](guide/implementing-hooks.md)** - Deep dive into plugin implementation
 - **[Result Collection](guide/result-collection.md)** - Explore the 18 result strategies
-- **[API Reference](api/index.md)** - Complete API documentation
+- **[API Reference](api/simplug.md)** - Complete API documentation

@@ -273,7 +273,7 @@ Support multiple configuration sources with priority-based fallback.
 
 - **[Getting Started](getting-started.md)** - Basic concepts
 - **[Guides](guide/defining-hooks.md)** - Feature-specific documentation
-- **[API Reference](api/index.md)** - Complete API documentation
+- **[API Reference](api/simplug.md)** - Complete API documentation
 - **[Source Code](https://github.com/pwwang/simplug)** - Browse implementation
 
 ## Creating Your Own Examples

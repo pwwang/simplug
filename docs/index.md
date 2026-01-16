@@ -77,7 +77,7 @@ simplug is ideal for:
 
 - **[Getting Started](getting-started.md)** - Learn the basics
 - **[Guides](guide/defining-hooks.md)** - Detailed documentation on specific features
-- **[API Reference](api/index.md)** - Complete API documentation
+- **[API Reference](api/simplug.md)** - Complete API documentation
 - **[Examples](examples.md)** - Code examples and patterns
 
 ## License
