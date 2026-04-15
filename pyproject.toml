@@ -1,24 +1,33 @@
-[tool.poetry]
+[project]
 name = "simplug"
 version = "0.5.6"
 description = "A simple plugin system for python with async hooks supported"
-authors = ["pwwang <pwwang@pwwang.com>"]
-license = "MIT"
-homepage = "https://github.com/pwwang/simplug"
-repository  = "https://github.com/pwwang/simplug"
+authors = [{name = "pwwang", email = "pwwang@pwwang.com"}]
+license = {text = "MIT"}
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "diot>=0.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-diot = "^0.3"
+[project.urls]
+Homepage = "https://github.com/pwwang/simplug"
+Repository = "https://github.com/pwwang/simplug"
 
-[tool.poetry.build]
-generate-setup-file = true
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8"
-pytest-cov = "^5"
-setuptools = "^68"
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "setuptools>=68",
+]
+docs = [
+    "jinja2>=3.1.6",
+    "mkapi-fix>=0.1.1",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.6",
+    "pymdown-extensions>=10.21.2",
+]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -36,8 +45,8 @@ filterwarnings = [
 ]
 
 [build-system]
-requires = ["poetry>=1.0"]
-build-backend = "poetry.masonry.api"
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 88
