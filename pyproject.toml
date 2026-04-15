@@ -1,6 +1,6 @@
 [project]
 name = "simplug"
-version = "0.5.6"
+version = "0.5.7"
 description = "A simple plugin system for python with async hooks supported"
 authors = [{name = "pwwang", email = "pwwang@pwwang.com"}]
 license = {text = "MIT"}
