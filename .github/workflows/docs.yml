@@ -25,5 +25,5 @@ jobs:
           cd docs
           cp ../README.md index.md
           cd ..
-          uv mkdocs gh-deploy --clean --force
+          uv run mkdocs gh-deploy --clean --force
         if: success()
