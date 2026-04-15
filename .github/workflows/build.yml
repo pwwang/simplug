@@ -21,7 +21,7 @@ jobs:
         run: |
           uv sync
       - name: Run flake8
-        run: uv run flake8 simplug.py
+        run: uv run flake8 simplug
       - name: Test with pytest
         run: uv run pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
       - name: Upload pytest test results

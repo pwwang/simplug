@@ -15,6 +15,31 @@ from diot import OrderedDiot
 
 __version__ = "0.5.6"
 
+__all__ = [
+    "SimplugImpl",
+    "SimplugException",
+    "NoSuchPlugin",
+    "ResultError",
+    "ResultUnavailableError",
+    "PluginRegistered",
+    "NoPluginNameDefined",
+    "HookSignatureDifferentFromSpec",
+    "NoSuchHookSpec",
+    "HookRequired",
+    "HookSpecExists",
+    "AsyncImplOnSyncSpecError",
+    "SyncImplOnAsyncSpecWarning",
+    "MultipleImplsForSingleResultHookWarning",
+    "ImplMightNeedInstanceWarning",
+    "SimplugResult",
+    "SimplugWrapper",
+    "SimplugHook",
+    "SimplugHookAsync",
+    "SimplugHooks",
+    "SimplugContext",
+    "Simplug",
+]
+
 
 class SimplugImpl:
     """A namedtuple wrapper for hook implementation.
@@ -442,12 +467,17 @@ class SimplugHook:
             try:
                 sig = inspect.signature(self_obj)
                 required_params = [
-                    p for p in sig.parameters.values()
-                    if (p.kind in (
-                        inspect.Parameter.POSITIONAL_ONLY,
-                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    ) and p.default is inspect.Parameter.empty
-                      and p.name != "self")
+                    p
+                    for p in sig.parameters.values()
+                    if (
+                        p.kind
+                        in (
+                            inspect.Parameter.POSITIONAL_ONLY,
+                            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        )
+                        and p.default is inspect.Parameter.empty
+                        and p.name != "self"
+                    )
                 ]
                 if not required_params:
                     self_obj = self_obj()
@@ -713,9 +743,7 @@ class SimplugHookAsync(SimplugHook):
                 ret = await makecall(call, True)
                 if ret is not None:
                     if self.debug:
-                        print(
-                            "[simplug] - Returning first available (non-None) result"
-                        )
+                        print("[simplug] - Returning first available (non-None) result")
                     return ret
             raise ResultUnavailableError
         if result == SimplugResult.LAST_AVAIL.value:
