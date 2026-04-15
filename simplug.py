@@ -822,7 +822,7 @@ class SimplugHooks:
 
     def __init__(self) -> None:
 
-        self._registry = OrderedDiot()
+        self._registry = OrderedDiot()  # type: ignore
         self._specs: Dict[str, Union[SimplugHook, SimplugHookAsync]] = {}
         self._registry_sorted = False
 
@@ -1066,7 +1066,7 @@ class Simplug:
             plugin = ep.load()
             self.register((plugin, ep.name))
 
-    def register(self, *plugins: Any) -> None:
+    def register(self, *plugins: Any) -> None | Callable:
         """Register plugins
 
         Args:
@@ -1084,6 +1084,8 @@ class Simplug:
         if len(plugins) == 1 and callable(plugins[0]):
             # allow to use as a decorator
             return plugins[0]
+
+        return None
 
     def get_plugin(self, name: str, raw: bool = False) -> Union[SimplugWrapper, Any]:
         """Get the plugin wrapper or the raw plugin object
