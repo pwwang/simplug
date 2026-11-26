@@ -277,6 +277,7 @@ class SimplugWrapper:
     _name: Optional[str]
     priority: Tuple[int, int]
     enabled: bool
+    _instance_check: Optional[Tuple[Any, bool]]
 
     def __init__(self, plugin: Any, batch_index: int, index: int) -> None:
         self.plugin = self._name = None
@@ -304,6 +305,9 @@ class SimplugWrapper:
             self.plugin = self.plugin()
 
         self.enabled = True  # type: bool
+        # (cls.__init__, can_instantiate): computed from the class signature once,
+        # so a hook call does not rebuild it through inspect on every invocation.
+        self._instance_check = None
 
     @property
     def version(self) -> Optional[str]:
@@ -463,28 +467,40 @@ class SimplugHook:
 
         self_obj = plugin.plugin
         if inspect.isclass(self_obj):
-            # Try to instantiate the class if it has no required parameters
-            try:
-                sig = inspect.signature(self_obj)
-                required_params = [
-                    p
-                    for p in sig.parameters.values()
-                    if (
-                        p.kind
-                        in (
-                            inspect.Parameter.POSITIONAL_ONLY,
-                            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            # Try to instantiate the class if it has no required parameters.
+            # The answer depends only on the class signature, which inspect would
+            # otherwise re-parse and compile on every hook call; it is cached per
+            # plugin and recomputed when the class replaces its __init__.
+            init = getattr(self_obj, "__init__", None)
+            check = plugin._instance_check
+            if check is None or check[0] is not init:
+                try:
+                    sig = inspect.signature(self_obj)
+                    required_params = [
+                        p
+                        for p in sig.parameters.values()
+                        if (
+                            p.kind
+                            in (
+                                inspect.Parameter.POSITIONAL_ONLY,
+                                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                            )
+                            and p.default is inspect.Parameter.empty
+                            and p.name != "self"
                         )
-                        and p.default is inspect.Parameter.empty
-                        and p.name != "self"
-                    )
-                ]
-                if not required_params:
+                    ]
+                    check = (init, not required_params)
+                except (TypeError, ValueError):  # pragma: no cover
+                    # More specific exception handling
+                    # Fallback to passing the class if instantiation fails
+                    check = (init, False)
+                plugin._instance_check = check
+            if check[1]:
+                try:
                     self_obj = self_obj()
-            except (TypeError, ValueError):  # pragma: no cover
-                # More specific exception handling
-                # Fallback to passing the class if instantiation fails
-                pass
+                except (TypeError, ValueError):  # pragma: no cover
+                    # Fallback to passing the class if instantiation fails
+                    pass
 
         return (self_obj, *args)
 
